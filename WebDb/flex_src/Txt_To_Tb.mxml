@@ -1,0 +1,847 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"  title="导入文本向导" creationComplete="init()" layout="absolute" width="800" height="504" borderColor="#E2E2E2">
+	<mx:states>
+		<mx:State name="Step2">
+			<mx:RemoveChild target="{ChBox}"/>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="108" y="48" text="字段选项" fontWeight="bold" width="81" height="29" id="label3" fontSize="15"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="79" y="57" width="10" height="71" id="vrule2"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="83" y="123" width="607" height="8" id="hrule2"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="687" y="60" width="4" height="67" id="vrule1"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="178" y="60" width="511" id="hrule1"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="84" y="57" width="23" height="2" id="hrule3"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="116" y="81" text="字段名称" fontWeight="bold" fontSize="14" id="label4"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="420" y="79" text="数据类型" fontWeight="bold" fontSize="14" id="label5"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:TextInput id="Input" x="189" y="81" height="24" width="129" text="{HeadName}"  change="RefreshHead()"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:ComboBox  id="ComB" x="493" y="79" dataProvider="{ColType}" close="CloseHandle()"></mx:ComboBox>
+			</mx:AddChild>
+			<mx:RemoveChild target="{button0}"/>
+			<mx:AddChild relativeTo="{button1}" position="before">
+				<mx:Button x="369" y="423" label="取消" click="cancel()" width="87" height="37" fontWeight="bold" fontSize="18" id="button2"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{button1}" position="before">
+				<mx:Button x="579.5" y="423" label="下一步" click="this.currentState='Step3'" width="87" height="37" fontWeight="bold" fontSize="18" id="button4"/>
+			</mx:AddChild>
+			<mx:SetProperty target="{button3}" name="x" value="475"/>
+			<mx:SetProperty target="{button3}" name="label" value="上一步"/>
+			<mx:SetEventHandler target="{button3}" name="click" handler="Forward( )"/>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="13" y="16" text="可以指定有关正在导入的每一字段的信息。在下面列表中选择字段，然后在&quot;字段选项&quot;框内做必要的修改" fontSize="15" fontWeight="bold" id="label6"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="Step3" basedOn="Step2">
+			<mx:AddChild position="lastChild">
+				<mx:Label x="49" y="13" text="建议您为新表定义一个主键，主键用来唯一地标识表中的每条记录，可使数据搜索加快" fontWeight="bold" fontSize="17" id="label0"/>
+			</mx:AddChild>
+			<mx:RemoveChild target="{vrule2}"/>
+			<mx:RemoveChild target="{hrule3}"/>
+			<mx:RemoveChild target="{label3}"/>
+			<mx:RemoveChild target="{label4}"/>
+			<mx:RemoveChild target="{hrule1}"/>
+			<mx:RemoveChild target="{Input}"/>
+			<mx:RemoveChild target="{label5}"/>
+			<mx:RemoveChild target="{ComB}"/>
+			<mx:RemoveChild target="{hrule2}"/>
+			<mx:RemoveChild target="{vrule1}"/>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButton x="237" y="63" label="我自己选择主键:" groupName="radiogroup1" fontSize="15" fontWeight="bold" click="ChoosePri(event)" id="radiobutton1"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButton x="237" y="94" label="不要主键（默认勾选）" groupName="radiogroup1"  selected="true" fontSize="15" fontWeight="bold" width="194" click="DefaultPri(event)" id="radiobutton2"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:ComboBox x="395" y="65" id="PriCombox" width="124"  dataProvider="{Head}" close="ClosePri(event)"></mx:ComboBox>
+			</mx:AddChild>
+			<mx:RemoveChild target="{button3}"/>
+			<mx:RemoveChild target="{button4}"/>
+			<mx:AddChild relativeTo="{button1}" position="before">
+				<mx:Button x="472" y="423" label="上一步" click="this.currentState='Step2'" width="87" height="37" fontWeight="bold" fontSize="18" id="button5"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{button1}" position="before">
+				<mx:Button x="572" y="423" label="下一步" click="lastStep()" width="87" height="37" fontWeight="bold" fontSize="18" id="button6"/>
+			</mx:AddChild>
+			<mx:RemoveChild target="{label6}"/>
+		</mx:State>
+		<mx:State name="Step4" basedOn="Step3">
+			<mx:RemoveChild target="{button5}"/>
+			<mx:RemoveChild target="{button6}"/>
+			<mx:RemoveChild target="{label0}"/>
+			<mx:RemoveChild target="{radiobutton1}"/>
+			<mx:RemoveChild target="{PriCombox}"/>
+			<mx:RemoveChild target="{radiobutton2}"/>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="115" y="32" text="以上是向导导入数据的全部信息" fontWeight="bold" fontSize="23"/>
+			</mx:AddChild>
+			<mx:RemoveChild target="{canvas1}"/>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="211" y="104" text="导入到表(建立表名)" fontSize="17" fontWeight="bold"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:TextInput id="TbName" x="216" y="138" width="184" height="29"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{button1}" position="before">
+				<mx:Button x="481" y="423" label="上一步" click="this.currentState='Step3'" width="87" height="37" fontWeight="bold" fontSize="18" id="button7"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="181" y="228" text="请选择数据库来存放上面的数据表:" fontWeight="bold" fontSize="17"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:ComboBox x="481" y="228" height="27" id="DbComb" close="ChooseDbName(event)"></mx:ComboBox>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	
+	<mx:Script>
+		<![CDATA[
+			         import com.adobe.serialization.json.JSON;
+				     import mx.rpc.events.FaultEvent;
+					 import mx.rpc.events.ResultEvent;
+					 import mx.controls.Alert;
+					
+					 import mx.controls.DataGrid;
+	                 import mx.controls.dataGridClasses.DataGridColumn;
+	                 import mx.events.DataGridEvent;
+					 
+					 import mx.collections.ArrayCollection;		             
+		             import mx.managers.PopUpManager; 		            
+			         import mx.events.ItemClickEvent;    
+			         
+			         private var arDatas:ArrayCollection=new ArrayCollection();
+				     private var ColArray:ArrayCollection=new ArrayCollection();
+	                 private var arr:Array=new Array;
+	                 private var ColNum:int;
+			         
+			         public var PathStr:String;    //PathStr保存从ImportGuide2传过来的本地文件地址			         
+			         private var TableInfo:ArrayCollection=new ArrayCollection();
+			         private var TableJson:String;
+			         
+			         private var RowDataJson:String=new String;
+			         private var HeadJson:String=new String;
+			         //该数组用来存储表格中的列名和列类型
+                     private var StoreArray:ArrayCollection=new ArrayCollection();
+                    
+			         //PriStore用于存储被设为主键的列的列名
+	                 private var PriStore:String;
+			         private var MyDataDG:DataGrid; 
+			          //保存最初的第一行的数据
+				     private var Initial:ArrayCollection=new ArrayCollection;
+			         private var FirstRow:Object;
+			         private var ColIndex:int;
+			         
+			         //DbArray存放用户已经创建过的数据库名，用于用户选择将数据表保存到哪个数据库
+				     private var DbArray:ArrayCollection=new ArrayCollection;
+				     //DbForSent保存用户选择的数据库，这将发送到后台，用来存放用户导入成功的新的数据表
+				     private var DbForSent:String;
+			         
+			         //PriFlag表示拥护是否设置主键，如果为false，则用户设置了主键。 否则，没有设置主键。
+	                 private var PriFlag:Boolean=false;
+	                 
+			         private var Head:ArrayCollection=new ArrayCollection;
+			        
+			         [Bindable]
+	                 private var HeadName:String;
+	                 
+	                 [Bindable]
+	             public var ColType: Array = ("VARCHAR(20),TEXT,INT,FLOAT,DOUBLE,CHAR,BOOLEAN,BIT,TINYINT,SMALLINT,MEDIUMINT,INTEGER,BIGINT,DOUBLE PRECISION,DECIMAL,"+
+			     "DATE,DATETIME,TIMESTAMP,TIME,YEAR,BINARY,VARBINARY,TINYBLOB,TINYTEXT,BLOB,MEDIUMBLOB,MEDIUMTEXT,LONGBLOB,LONGTEXT,ENUM,SET").split(",");
+	             
+	                 
+			       private function init():void
+					{
+					  RText.ReadTextCont(PathStr); 
+					}
+					
+				
+		           private function SucReadTxt(event:ResultEvent):void
+			      {								
+				     Head.removeAll();
+				     arDatas.removeAll();
+				     arDatas=ArrayCollection(event.result); 
+				     FirstRow=arDatas[0];					 
+					 ColNum =int(arDatas[arDatas.length-1]);      	             
+      	             arDatas.removeItemAt(arDatas.length-1);
+      	             
+					 GetFirstRow();  
+					 createDataGrid( );					 
+				  }
+				  
+				   public function createDataGrid( ):void
+      	           {    
+      	        		MyDataDG=new DataGrid();
+      	        		//初始化为不显示表头
+      	        		MyDataDG.showHeaders=false;
+      	        		MyDataDG.editable=true;
+						MyDataDG.sortableColumns=false;
+					   	MyDataDG.setStyle("verticalAlign", "middle")
+					    MyDataDG.columns=myGridcolumns();
+					    MyDataDG.dataProvider=arDatas;
+		                canvas1.removeAllChildren();
+		                canvas1.addChild(MyDataDG);
+		                MyDataDG.percentWidth=100;
+		                MyDataDG.percentHeight=100;
+		                
+		               MyDataDG.addEventListener(DataGridEvent.ITEM_EDIT_BEGINNING,onEditBeginning);
+	                }    
+	                
+			        private var ValueArray:Array=["key1","key2","key3","key4","key5","key6","key7","key8","key9","key10"];
+				
+					private function myGridcolumns():Array
+					{
+						var cols:Array=MyDataDG.columns;
+					  
+				    	for (var m:int=0; m<ColNum;m++)
+						 {
+							var ShowID_DC:DataGridColumn=new DataGridColumn();
+							ShowID_DC.editable=true;
+							ShowID_DC.draggable=false;
+							ShowID_DC.headerText=Head[m].label;
+							ShowID_DC.dataField=ValueArray[m];
+							
+							ShowID_DC.setStyle("textAlign", "center");
+							cols.push(ShowID_DC)
+					     }
+						 return cols;
+					} 
+				  
+				  
+				   public function GetFirstRow( ):void
+      	           { 
+      	           	  Handle(ColNum);      	           	  	           	 
+ 			        } 
+			      
+			       public function Handle(Num:int):void
+      	           { 
+	      	            switch(Num)
+			   	          {
+			   	          	case 1:
+			   	          	        var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        break;
+			   	          	case 2:
+			   	          	       var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        var obj1:Object=new Object;
+			   	          	        obj1.label=arDatas[0].key2;
+			   	          	        obj1.type="VARCHAR(20)";
+			   	          	        obj1.pri="false";
+			   	          	        Head.addItem(obj1);
+			   	          	        break;
+			   	            case 3:
+			   	          	        var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        var obj1:Object=new Object;
+			   	          	        obj1.label=arDatas[0].key2;
+			   	          	        obj1.type="VARCHAR(20)";
+			   	          	        obj1.pri="false";
+			   	          	        Head.addItem(obj1);
+			   	          	        var obj2:Object=new Object;
+			   	          	        obj2.label=arDatas[0].key3;
+			   	          	        obj2.type="VARCHAR(20)";
+			   	          	        obj2.pri="false";
+			   	          	        Head.addItem(obj2);
+			   	          	        break;
+			   	            case 4:
+			   	          	        var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        var obj1:Object=new Object;
+			   	          	        obj1.label=arDatas[0].key2;
+			   	          	        obj1.type="VARCHAR(20)";
+			   	          	        obj1.pri="false";
+			   	          	        Head.addItem(obj1);
+			   	          	        var obj2:Object=new Object;
+			   	          	        obj2.label=arDatas[0].key3;
+			   	          	        obj2.type="VARCHAR(20)";
+			   	          	        obj2.pri="false";
+			   	          	        Head.addItem(obj2);
+			   	          	        var obj3:Object=new Object;
+			   	          	        obj3.label=arDatas[0].key4;
+			   	          	        obj3.type="VARCHAR(20)";
+			   	          	        obj3.pri="false";
+			   	          	        Head.addItem(obj3);
+			   	          	        break;	        	       
+			   	            case 5:
+			   	          	        var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        var obj1:Object=new Object;
+			   	          	        obj1.label=arDatas[0].key2;
+			   	          	        obj1.type="VARCHAR(20)";
+			   	          	        obj1.pri="false";
+			   	          	        Head.addItem(obj1);
+			   	          	        var obj2:Object=new Object;
+			   	          	        obj2.label=arDatas[0].key3;
+			   	          	        obj2.type="VARCHAR(20)";
+			   	          	        obj2.pri="false";
+			   	          	        Head.addItem(obj2);
+			   	          	        var obj3:Object=new Object;
+			   	          	        obj3.label=arDatas[0].key4;
+			   	          	        obj3.type="VARCHAR(20)";
+			   	          	        obj3.pri="false";
+			   	          	        Head.addItem(obj3);
+			   	          	        var obj4:Object=new Object;
+			   	          	        obj4.label=arDatas[0].key5;
+			   	          	        obj4.type="VARCHAR(20)";
+			   	          	        obj4.pri="false";
+			   	          	        Head.addItem(obj4);
+			   	          	        break;
+			   	            case 6:
+			   	          	        var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        var obj1:Object=new Object;
+			   	          	        obj1.label=arDatas[0].key2;
+			   	          	        obj1.type="VARCHAR(20)";
+			   	          	        obj1.pri="false";
+			   	          	        Head.addItem(obj1);
+			   	          	        var obj2:Object=new Object;
+			   	          	        obj2.label=arDatas[0].key3;
+			   	          	        obj2.type="VARCHAR(20)";
+			   	          	        obj2.pri="false";
+			   	          	        Head.addItem(obj2);
+			   	          	        var obj3:Object=new Object;
+			   	          	        obj3.label=arDatas[0].key4;
+			   	          	        obj3.type="VARCHAR(20)";
+			   	          	        obj3.pri="false";
+			   	          	        Head.addItem(obj3);
+			   	          	        var obj4:Object=new Object;
+			   	          	        obj4.label=arDatas[0].key5;
+			   	          	        obj4.type="VARCHAR(20)";
+			   	          	        obj4.pri="false";
+			   	          	        Head.addItem(obj4);
+			   	          	        var obj5:Object=new Object;
+			   	          	        obj5.label=arDatas[0].key6;
+			   	          	        obj5.type="VARCHAR(20)";
+			   	          	        obj5.pri="false";
+			   	          	        Head.addItem(obj5);
+			   	          	        break;  
+			   	          	 case 7:
+			   	          	        var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        var obj1:Object=new Object;
+			   	          	        obj1.label=arDatas[0].key2;
+			   	          	        obj1.type="VARCHAR(20)";
+			   	          	        obj1.pri="false";
+			   	          	        Head.addItem(obj1);
+			   	          	        var obj2:Object=new Object;
+			   	          	        obj2.label=arDatas[0].key3;
+			   	          	        obj2.type="VARCHAR(20)";
+			   	          	        obj2.pri="false";
+			   	          	        Head.addItem(obj2);
+			   	          	        var obj3:Object=new Object;
+			   	          	        obj3.label=arDatas[0].key4;
+			   	          	        obj3.type="VARCHAR(20)";
+			   	          	        obj3.pri="false";
+			   	          	        Head.addItem(obj3);
+			   	          	        var obj4:Object=new Object;
+			   	          	        obj4.label=arDatas[0].key5;
+			   	          	        obj4.type="VARCHAR(20)";
+			   	          	        obj4.pri="false";
+			   	          	        Head.addItem(obj4);
+			   	          	        var obj5:Object=new Object;
+			   	          	        obj5.label=arDatas[0].key6;
+			   	          	        obj5.type="VARCHAR(20)";
+			   	          	        obj5.pri="false";
+			   	          	        Head.addItem(obj5);
+			   	          	        var obj6:Object=new Object;
+			   	          	        obj6.label=arDatas[0].key7;
+			   	          	        obj6.type="VARCHAR(20)";
+			   	          	        obj6.pri="false";
+			   	          	        Head.addItem(obj6);
+			   	          	        break;  
+			   	          	 case 8:
+			   	          	        var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        var obj1:Object=new Object;
+			   	          	        obj1.label=arDatas[0].key2;
+			   	          	        obj1.type="VARCHAR(20)";
+			   	          	        obj1.pri="false";
+			   	          	        Head.addItem(obj1);
+			   	          	        var obj2:Object=new Object;
+			   	          	        obj2.label=arDatas[0].key3;
+			   	          	        obj2.type="VARCHAR(20)";
+			   	          	        obj2.pri="false";
+			   	          	        Head.addItem(obj2);
+			   	          	        var obj3:Object=new Object;
+			   	          	        obj3.label=arDatas[0].key4;
+			   	          	        obj3.type="VARCHAR(20)";
+			   	          	        obj3.pri="false";
+			   	          	        Head.addItem(obj3);
+			   	          	        var obj4:Object=new Object;
+			   	          	        obj4.label=arDatas[0].key5;
+			   	          	        obj4.type="VARCHAR(20)";
+			   	          	        obj4.pri="false";
+			   	          	        Head.addItem(obj4);
+			   	          	        var obj5:Object=new Object;
+			   	          	        obj5.label=arDatas[0].key6;
+			   	          	        obj5.type="VARCHAR(20)";
+			   	          	        obj5.pri="false";
+			   	          	        Head.addItem(obj5);
+			   	          	        var obj6:Object=new Object;
+			   	          	        obj6.label=arDatas[0].key7;
+			   	          	        obj6.type="VARCHAR(20)";
+			   	          	        obj6.pri="false";
+			   	          	        Head.addItem(obj6);
+			   	          	        var obj7:Object=new Object;
+			   	          	        obj7.label=arDatas[0].key8;
+			   	          	        obj7.type="VARCHAR(20)";
+			   	          	        obj7.pri="false";
+			   	          	        Head.addItem(obj7);
+			   	          	        break;      
+			   	          	  case 9:
+			   	          	        var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        var obj1:Object=new Object;
+			   	          	        obj1.label=arDatas[0].key2;
+			   	          	        obj1.type="VARCHAR(20)";
+			   	          	        obj1.pri="false";
+			   	          	        Head.addItem(obj1);
+			   	          	        var obj2:Object=new Object;
+			   	          	        obj2.label=arDatas[0].key3;
+			   	          	        obj2.type="VARCHAR(20)";
+			   	          	        obj2.pri="false";
+			   	          	        Head.addItem(obj2);
+			   	          	        var obj3:Object=new Object;
+			   	          	        obj3.label=arDatas[0].key4;
+			   	          	        obj3.type="VARCHAR(20)";
+			   	          	        obj3.pri="false";
+			   	          	        Head.addItem(obj3);
+			   	          	        var obj4:Object=new Object;
+			   	          	        obj4.label=arDatas[0].key5;
+			   	          	        obj4.type="VARCHAR(20)";
+			   	          	        obj4.pri="false";
+			   	          	        Head.addItem(obj4);
+			   	          	        var obj5:Object=new Object;
+			   	          	        obj5.label=arDatas[0].key6;
+			   	          	        obj5.type="VARCHAR(20)";
+			   	          	        obj5.pri="false";
+			   	          	        Head.addItem(obj5);
+			   	          	        var obj6:Object=new Object;
+			   	          	        obj6.label=arDatas[0].key7;
+			   	          	        obj6.type="VARCHAR(20)";
+			   	          	        obj6.pri="false";
+			   	          	        Head.addItem(obj6);
+			   	          	        var obj7:Object=new Object;
+			   	          	        obj7.label=arDatas[0].key8;
+			   	          	        obj7.type="VARCHAR(20)";
+			   	          	        obj7.pri="false";
+			   	          	        Head.addItem(obj7);
+			   	          	        var obj8:Object=new Object;
+			   	          	        obj8.label=arDatas[0].key9;
+			   	          	        obj8.type="VARCHAR(20)";
+			   	          	        obj8.pri="false";
+			   	          	        Head.addItem(obj8);
+			   	          	        break;      
+			   	          	  case 10:
+			   	          	        var obj0:Object=new Object;
+			   	          	        obj0.label=arDatas[0].key1;
+			   	          	        obj0.type="VARCHAR(20)";
+			   	          	        obj0.pri="false";
+			   	          	        Head.addItem(obj0);
+			   	          	        var obj1:Object=new Object;
+			   	          	        obj1.label=arDatas[0].key2;
+			   	          	        obj1.type="VARCHAR(20)";
+			   	          	        obj1.pri="false";
+			   	          	        Head.addItem(obj1);
+			   	          	        var obj2:Object=new Object;
+			   	          	        obj2.label=arDatas[0].key3;
+			   	          	        obj2.type="VARCHAR(20)";
+			   	          	        obj2.pri="false";
+			   	          	        Head.addItem(obj2);
+			   	          	        var obj3:Object=new Object;
+			   	          	        obj3.label=arDatas[0].key4;
+			   	          	        obj3.type="VARCHAR(20)";
+			   	          	        obj3.pri="false";
+			   	          	        Head.addItem(obj3);
+			   	          	        var obj4:Object=new Object;
+			   	          	        obj4.label=arDatas[0].key5;
+			   	          	        obj4.type="VARCHAR(20)";
+			   	          	        obj4.pri="false";
+			   	          	        Head.addItem(obj4);
+			   	          	        var obj5:Object=new Object;
+			   	          	        obj5.label=arDatas[0].key6;
+			   	          	        obj5.type="VARCHAR(20)";
+			   	          	        obj5.pri="false";
+			   	          	        Head.addItem(obj5);
+			   	          	        var obj6:Object=new Object;
+			   	          	        obj6.label=arDatas[0].key7;
+			   	          	        obj6.type="VARCHAR(20)";
+			   	          	        obj6.pri="false";
+			   	          	        Head.addItem(obj6);
+			   	          	        var obj7:Object=new Object;
+			   	          	        obj7.label=arDatas[0].key8;
+			   	          	        obj7.type="VARCHAR(20)";
+			   	          	        obj7.pri="false";
+			   	          	        Head.addItem(obj7);
+			   	          	        var obj8:Object=new Object;
+			   	          	        obj8.label=arDatas[0].key9;
+			   	          	        obj8.type="VARCHAR(20)";
+			   	          	        obj8.pri="false";
+			   	          	        Head.addItem(obj8);
+			   	          	        var obj9:Object=new Object;
+			   	          	        obj9.label=arDatas[0].key10;
+			   	          	        obj9.type="VARCHAR(20)";
+			   	          	        obj9.pri="false";
+			   	          	        Head.addItem(obj9);
+			   	          	        break;   	   	   
+			   	           }
+      	           } 
+				
+				 private function AddColName( ):void
+				{
+		 			
+		 			if(ChBox.selected==true)
+		 			{
+		 			  
+		 			  MyDataDG.dataProvider=null;
+		 			  arDatas.removeItemAt(0);
+		 			  arDatas.refresh();
+		 			  MyDataDG.showHeaders=true;
+			          MyDataDG.dataProvider=arDatas;
+		 			  
+		 			}
+		 			else
+		 			{
+		 				MyDataDG.dataProvider=null;
+		 				arDatas.addItemAt(FirstRow,0);
+		 				MyDataDG.showHeaders=false;
+		 				MyDataDG.dataProvider=null;
+		                arDatas.refresh();
+			            MyDataDG.dataProvider=arDatas;
+		 			}	
+		 			
+				}
+				
+				
+				   private function onEditBeginning(event:DataGridEvent):void
+				   {
+		 		       var cols:Array=MyDataDG.columns;					
+					   ColIndex=event.columnIndex;
+					   HeadName=cols[event.columnIndex].headerText; 
+					 //mx.controls.Alert.show(HeadName+" "+ColIndex); 
+				    }
+				
+				    private function FaultReadTxt(event:FaultEvent):void
+			      {
+					 mx.controls.Alert.show(event.fault.faultString);  					 
+				  }	
+				  
+				 
+		 		private function cancel( ):void
+				{
+		 			PopUpManager.removePopUp(this);
+				}
+				
+				private function CloseHandle( ):void
+				{
+		 		    var ColType:String=ComB.selectedItem.toString();
+		 		   Head[ColIndex].type=ColType;	
+				}
+				
+				private function ClosePri(event:Event):void
+				{
+		 			PriStore=PriCombox.selectedItem.label;
+				}
+				
+				 private function ChoosePri(event:Event):void
+				{
+					PriFlag=true;
+						
+		 		}
+		 		
+                 private function DefaultPri(event:Event):void
+		 		 {
+					PriFlag=false;					
+		 		 }
+		 		 		 		
+		 		 private function RefreshHead( ):void
+				{
+					var cols:Array=MyDataDG.columns;
+		 		   cols[ColIndex].headerText=Input.text;
+		 		   Head[ColIndex].label=Input.text;					
+		 		}
+		 		
+		 		 private function ToRead2( ):void
+				{
+					if(ChBox.selected==false)
+			 		  {
+			 		  	  var cols:Array=MyDataDG.columns;
+			 		      for(var i:int=0;i<cols.length;i++)
+				 		   { cols[i].headerText="Col"+(i+1).toString();
+				 		     Head[i].label="Col"+(i+1).toString();
+				 		   }  
+			 		      MyDataDG.showHeaders=true;
+			 		  }
+			 		  
+		 		    this.currentState='Step2'			
+		 		}
+			
+			  private function Forward( ):void
+				{
+			 		  if(!ChBox.selected)
+			 	     {
+			 			MyDataDG.showHeaders=false;
+			 		 }	 	
+			 	    this.currentState='';
+			 					
+				}
+			   
+		 		
+		 				//定义RadioButtonGroup2的itemClick事件
+    
+		 	 private function Complete( ):void 
+		 	 {	      
+			      if(PriFlag)
+			 		   { 
+			 		     for(var i:int=0;i<Head.length;i++)
+		           	       if(PriStore==Head[i].label)
+          	                {
+          	               	   Head[i].pri="true";
+		           	           break;
+		           	        }
+			 		    }
+		           	      
+		           	    StoreArray.removeAll();
+			 		
+			           //将列名和列类型保存起来
+					   for(var i:int=0;i<Head.length;i++)
+			           {
+			               var obj:Object=new Object(); 
+			               obj.key1=Head[i].label; 
+			               obj.key2=Head[i].type; 
+			               obj.key3=Head[i].pri; 
+			               StoreArray.addItem(obj);
+			           }
+			       
+			           //添加用户名、数据库名、新建的数据表名、列数
+			           var UserStr:String=parentApplication.uName.text+"$"+DbForSent+"$"+TbName.text;
+			           var UserObj:Object=new Object(); 
+			           UserObj.key1=UserStr; 
+			           UserObj.key2=ColNum;
+			           UserObj.key3="false"; 
+			           StoreArray.addItem(UserObj);
+			           	        
+			           HeadJson= JSON.encode(StoreArray.toArray());
+					   //mx.controls.Alert.show(HeadJson);
+					   CreateTb.CreaTable(HeadJson);	     
+		     }
+		     
+		      private function SucCreate(event:ResultEvent):void
+			  {
+					   StoreArray.removeAll();
+			 		   //添加每行的数据  
+	           	       for(var r:int=0;r<arDatas.length;r++)
+	           	        {	           	         	
+	           	        	GetRowData(ColNum,arDatas[r]);
+	           	        } 
+	           	     
+	           	       RowDataJson= JSON.encode(StoreArray.toArray());
+					   //mx.controls.Alert.show(RowDataJson);  
+					   AddTbData.InSertRow(RowDataJson);
+			  }
+			 
+			  //创建数据表结构失败  
+		      private function FaultCreate(event:FaultEvent):void
+			  {
+					 mx.controls.Alert.show(event.fault.faultString);  
+			  } 
+				  
+			  //装换为数据表成功
+		      private function SucAdd(event:ResultEvent):void
+			  {
+					 mx.controls.Alert.show("Done Success!");
+					 dispatchEvent(new Event("myEvent2"));   
+					 cancel();
+			  }
+				
+		     //装换为数据表失败  
+			  private function FaultAdd(event:FaultEvent):void
+			   {
+					 mx.controls.Alert.show(event.fault.faultString);  
+			    }
+			  	  
+				  private function GetRowData(num:int,obj:Object):void
+				{
+					   switch(num)
+			   	          {
+			   	          	case 1:	   	          	        
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        StoreArray.addItem(RowObj);
+			   	          	        break;
+			   	          	case 2:
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        RowObj.key2=obj.key2;			   	          	        	   	          	       	   	          	       		   	          	      			   	          	      			   	          	        			   	          	       			   	          	        
+			   	          	        StoreArray.addItem(RowObj);
+			   	          	        break;
+			   	            case 3:
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        RowObj.key2=obj.key2;
+			   	          	        RowObj.key3=obj.key3;			   	          	       	   	          	       		   	          	      			   	          	      			   	          	        			   	          	       			   	          	        
+			   	          	        StoreArray.addItem(RowObj);
+			   	          	        break;
+			   	            case 4:
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        RowObj.key2=obj.key2;
+			   	          	        RowObj.key3=obj.key3;
+			   	          	        RowObj.key4=obj.key4;			   	          	       		   	          	      			   	          	      			   	          	        			   	          	       			   	          	        
+			   	          	        StoreArray.addItem(RowObj);
+			   	          	        break;	        	       
+			   	            case 5:
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        RowObj.key2=obj.key2;
+			   	          	        RowObj.key3=obj.key3;
+			   	          	        RowObj.key4=obj.key4;
+			   	          	        RowObj.key5=obj.key5;			   	          	      			   	          	      			   	          	        			   	          	       			   	          	        
+			   	          	        StoreArray.addItem(RowObj);
+			   	            case 6:
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        RowObj.key2=obj.key2;
+			   	          	        RowObj.key3=obj.key3;
+			   	          	        RowObj.key4=obj.key4;
+			   	          	        RowObj.key5=obj.key5;
+			   	          	        RowObj.key6=obj.key6;			   	          	      			   	          	        			   	          	       			   	          	        
+			   	          	        StoreArray.addItem(RowObj);
+			   	          	        break;  
+			   	          	 case 7:
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        RowObj.key2=obj.key2;
+			   	          	        RowObj.key3=obj.key3;
+			   	          	        RowObj.key4=obj.key4;
+			   	          	        RowObj.key5=obj.key5;
+			   	          	        RowObj.key6=obj.key6;
+			   	          	        RowObj.key7=obj.key7;			   	          	        			   	          	       			   	          	        
+			   	          	        StoreArray.addItem(RowObj);
+			   	          	        break;  
+			   	          	 case 8:
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        RowObj.key2=obj.key2;
+			   	          	        RowObj.key3=obj.key3;
+			   	          	        RowObj.key4=obj.key4;
+			   	          	        RowObj.key5=obj.key5;
+			   	          	        RowObj.key6=obj.key6;
+			   	          	        RowObj.key7=obj.key7;
+			   	          	        RowObj.key8=obj.key8;			   	          	       			   	          	        
+			   	          	        StoreArray.addItem(RowObj);
+			   	          	        break;      
+			   	          	  case 9:
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        RowObj.key2=obj.key2;
+			   	          	        RowObj.key3=obj.key3;
+			   	          	        RowObj.key4=obj.key4;
+			   	          	        RowObj.key5=obj.key5;
+			   	          	        RowObj.key6=obj.key6;
+			   	          	        RowObj.key7=obj.key7;
+			   	          	        RowObj.key8=obj.key8;
+			   	          	        RowObj.key9=obj.key9;			   	          	        
+			   	          	        StoreArray.addItem(RowObj);
+			   	          	        break;      
+			   	          	  case 10:
+			   	          	        var RowObj:Object=new Object;
+			   	          	        RowObj.key1=obj.key1;
+			   	          	        RowObj.key2=obj.key2;
+			   	          	        RowObj.key3=obj.key3;
+			   	          	        RowObj.key4=obj.key4;
+			   	          	        RowObj.key5=obj.key5;
+			   	          	        RowObj.key6=obj.key6;
+			   	          	        RowObj.key7=obj.key7;
+			   	          	        RowObj.key8=obj.key8;
+			   	          	        RowObj.key9=obj.key9;
+			   	          	        RowObj.key10=obj.key10;
+			   	          	        StoreArray.addItem(RowObj);
+			   	          	        break;   	   	   
+			   	           }
+						
+		 		} 	
+		     
+		      private function ChooseDbName(event:Event):void 
+		 	  {
+		 		DbForSent=DbComb.selectedItem.label;		 					 			
+		 	  }
+		     
+		      private function lastStep():void
+			  {
+				GetDb.getDbName(parentApplication.uName.text);
+				this.currentState='Step4';
+			  }
+		 		
+		 	  //成功读取数据名
+		      private function SucDbName(event:ResultEvent):void
+			      {
+					 DbArray=ArrayCollection(event.result);				
+					 DbComb.dataProvider=DbArray;	
+					 DbForSent=DbArray[0].label; //	DbForSent初始化为第一个数据库名			 
+				  }
+				  
+			 //读取数据库名失败  
+			 private function FaultDbName(event:FaultEvent):void
+			      {
+					 mx.controls.Alert.show(event.fault.faultString);  
+					 
+				  }	
+		]]>
+	</mx:Script>
+	
+	   <mx:RemoteObject id="AddTbData" destination="ExcelToTable" result="SucAdd(event)" fault="FaultAdd(event)"/>
+	  <mx:RemoteObject id="CreateTb" destination="ExcelToTable" result="SucCreate(event)" fault="FaultCreate(event)"/>
+	  <mx:RemoteObject id="RText" destination="ReadFromText" result="SucReadTxt(event)" fault="FaultReadTxt(event)"/>
+	   <mx:RemoteObject id="GetDb" destination="Export" result="SucDbName(event)" fault="FaultDbName(event)"/>
+	  <mx:Canvas x="10" y="147" width="760" height="270" id="canvas1">
+	  </mx:Canvas>
+	  <mx:CheckBox x="125" y="77" label="第一行包含列标题" fontWeight="bold" fontSize="14" id="ChBox" click="AddColName( )"/>
+	  <mx:Button x="444" y="423" label="取消" click="cancel()" width="87" height="37" fontWeight="bold" fontSize="18" id="button3"/>
+	  <mx:Button x="560" y="423" label="下一步" click="ToRead2()" width="87" height="37" fontWeight="bold" fontSize="18" id="button0"/>
+	  <mx:Button x="674.5" y="423" label="完成" click="Complete( )" width="87" height="37" fontWeight="bold" fontSize="18" id="button1"/>
+	 
+	 
+</mx:TitleWindow>

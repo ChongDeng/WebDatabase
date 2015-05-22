@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"  creationComplete="init()" title="导出向导" layout="absolute" width="800" height="504" borderColor="#E2E2E2">
+	<mx:Script>
+		<![CDATA[
+				   import mx.events.ItemClickEvent; 			
+	               import mx.managers.PopUpManager; 
+	               import mx.controls.Alert;
+	               private var FlagStr:String;
+	             
+                 
+
+                   private function init():void
+			       {			       
+			         confirm.addEventListener(MouseEvent.CLICK,mouseClickHandler);
+			       }
+			    
+			       private function mouseClickHandler(event:MouseEvent):void
+			       {
+			           if(FlagStr=="Excel")
+			           	  {
+			           	    
+			           	     var WriteExcel:Tb_To_Excel = new Tb_To_Excel();                            
+                             WriteExcel.addEventListener("myEvent2",myEventHandler2);
+                             PopUpManager.addPopUp(WriteExcel,this,true); 
+                             PopUpManager.centerPopUp(WriteExcel);  
+			           	  }
+			            else if(FlagStr=="文本")
+			              {
+			              	 var WriteTxt:Tb_To_Txt = new Tb_To_Txt();                            
+                             WriteTxt.addEventListener("myEvent2",myEventHandler2);
+                             PopUpManager.addPopUp(WriteTxt,this,true); 
+                             PopUpManager.centerPopUp(WriteTxt); 
+			              }
+			            else if(FlagStr=="Access")
+			              {
+			              	 var WriteAccess:Db_To_Access = new Db_To_Access();                            
+                             WriteAccess.addEventListener("myEvent2",myEventHandler2);
+                             PopUpManager.addPopUp(WriteAccess,this,true); 
+                             PopUpManager.centerPopUp(WriteAccess);  
+			              }
+			            else
+			              {mx.controls.Alert.show("请先选中您要导出的类型","您还没有选中导出类型");}  	
+			           
+			       }
+			       
+	              private function myEventHandler2(event:Event):void
+	              {
+	                   dispatchEvent(new Event("myEvent"));  			       
+				       PopUpManager.removePopUp(this);
+	              }
+	              	              
+	              private function cancel( ):void{
+		 		    	PopUpManager.removePopUp(this);
+				  }
+	            	           
+				 private function handleClick(event:ItemClickEvent):void {   
+	                //选择一月的帐单时触发的事件
+	                if (event.currentTarget.selectedValue =="Excel文件(*.xls)") {   
+	                   FlagStr="Excel";    } 
+	                //选择二月的帐单时触发的事件
+	                if (event.currentTarget.selectedValue =="文本文件(*.txt)") {  
+	                   FlagStr="文本";  } 
+	                //选择三月的帐单时触发的事件
+	                if (event.currentTarget.selectedValue =="MS Access数据库(*.mdb)") {  
+	                   FlagStr="Access";  }                
+ 		        }    
+ 		        
+ 		           private function Confirm( ):void
+				{
+		 			
+				}
+				
+				  
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas width="100%" height="100%" id="canvas2">
+		
+		
+		<mx:Canvas x="-10" y="0" width="790" height="91" id="canvas1">
+			
+			<mx:Label x="37" y="31" text="请您选择具体的数据导出格式" fontWeight="bold" fontSize="17"/>
+		</mx:Canvas>
+		
+		
+		<mx:Canvas  id="DGFather" x="0" y="99" width="780" height="325">
+			<mx:Label x="41" y="10" text="导入类型" fontWeight="bold" fontSize="20"/>
+			<mx:HRule x="130" y="25" width="631"/>
+			<mx:VRule x="759" y="25" height="281"/>
+			<mx:VRule x="10" y="24" height="282"/>
+			<mx:HRule x="10" y="24" height="3" width="32"/>
+			<mx:HRule x="10" y="304" width="751"/>
+			<mx:RadioButtonGroup id="radiogroup1" itemClick="handleClick(event)"/>
+			<mx:RadioButton x="38" y="47" label="Excel文件(*.xls)" groupName="radiogroup1" fontWeight="bold" fontSize="13"/>
+			<mx:RadioButton x="38" y="73" label="文本文件(*.txt)" groupName="radiogroup1" fontWeight="bold" fontSize="14"/>
+			<mx:RadioButton x="38" y="99" label="MS Access数据库(*.mdb)" groupName="radiogroup1" fontWeight="bold" fontSize="14"/>
+		</mx:Canvas>
+		<mx:Button x="452" y="428" label="取消" fontSize="18" fontWeight="bold" id="button2" click="cancel()"/>
+		<mx:Button x="580" y="428"  id="confirm" label="确定" fontSize="18" fontWeight="bold" />
+		
+		
+	</mx:Canvas>
+	
+	
+</mx:TitleWindow>

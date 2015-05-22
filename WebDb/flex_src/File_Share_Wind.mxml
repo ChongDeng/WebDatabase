@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" layout="absolute" width="580" height="356"  fontSize="12" fontWeight="bold" title="与他人共享" backgroundColor="#518000">
+	
+	<mx:Script>
+		<![CDATA[
+			       import mx.rpc.events.FaultEvent;
+				   import mx.rpc.events.ResultEvent;								 
+				   import mx.collections.ArrayCollection;	            
+	               import mx.managers.PopUpManager;	               
+				   import mx.controls.Alert;
+				   import  mx.events.ItemClickEvent;
+				   
+				   public var FriendArray:ArrayCollection=new ArrayCollection;
+				   public var TbNameStr:String=new String;
+				   public var DbNameStr:String=new String;
+				   
+				   private var IsEditable:String="false"; 
+				   
+				   private function init( ):void{
+	             	 FTbArea.text=TbNameStr;
+	             	 NoteArea.text="我想与您共享";
+	               }
+	             
+	              private function close( ):void
+				  {
+		 			PopUpManager.removePopUp(this);
+				  }
+				  
+				  private function handler(event:ItemClickEvent):void {                                     
+                    if(event.currentTarget.selectedValue == "edit")
+                       IsEditable="true";     
+	                else
+	                   IsEditable="false";                 
+                 } 
+                 
+                 private function ViewContact():void {
+                       var view:View_Contact_Wind = new View_Contact_Wind();
+					   view.FriendArr=FriendArray;			
+					   view.addEventListener("chooseFriend",chooseContactHandler); 			   
+				       PopUpManager.addPopUp(view,this,true);     
+				       PopUpManager.centerPopUp(view); 
+				       view.contactName=returnedName; 			                    
+                 } 
+                 
+                  private function chooseContactHandler(event:Event):void
+					      {
+					         InvArea.text=returnedName.text;
+					      }
+		]]>
+	</mx:Script>
+	<mx:Text id="UserName" text="{parentApplication.uName.text}" visible="true"  x="10" y="284"/>	
+	<mx:TabNavigator x="1" y="0" width="549" height="305">
+		<mx:Canvas label="邀请他人" width="100%" height="100%" backgroundColor="#FFFFFF">
+			<mx:Button x="468" y="224" label="取消" fontSize="18" click="close()"/>
+			<mx:Button x="376" y="225" label="邀请" fontSize="18"/>
+			<mx:Label x="29" y="10" text="邀请：（输入您的好友的用户名）"/>
+			<mx:TextArea  id="InvArea" x="32" y="33" width="197" height="49"/>
+			<mx:RadioButtonGroup id="radiogroup1" itemClick="handler(event);" />
+			<mx:RadioButton x="34" y="93" label="作为协作者" value="edit" groupName="radiogroup1"/>
+			<mx:RadioButton x="127" y="93" label="作为查看者" value="view" groupName="radiogroup1"/>
+			<mx:LinkButton x="34" y="139" label="从通讯录中选择" click="ViewContact()"/>
+			<mx:Label x="295" y="12" text="表名：（以什么表名的形式与好友共享）"/>
+			<mx:TextArea id="FTbArea" x="295" y="33" width="226" height="49"/>
+			<mx:Label x="295" y="95" text="备注："/>
+			<mx:TextArea id="NoteArea" x="295" y="119" width="226" height="67"/>
+			<mx:Text id="returnedName" x="10" y="240" text="Text" visible="false"/>
+		</mx:Canvas>
+		<mx:Canvas label="详细信息" width="100%" height="100%">
+			<mx:Label x="58" y="14" text="具有访问权限者"/>
+			<mx:Tree x="56" y="45"></mx:Tree>
+		</mx:Canvas>
+	</mx:TabNavigator>
+</mx:TitleWindow>

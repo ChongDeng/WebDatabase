@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="362" height="248" fontWeight="bold" color="#3C210B" showCloseButton="false">
+	<mx:Script>
+		<![CDATA[
+			private function handle(){
+				 mx.controls.Alert.show("Hello");      
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Label x="10" y="10" text="恭喜您注册成功" fontSize="31" color="#0B3C18" fontWeight="bold" fontFamily="Verdana"/>
+	<mx:Button x="141" y="150" label="点击返回登陆界面" fontSize="18" click="handle();"/>
+	
+</mx:TitleWindow>

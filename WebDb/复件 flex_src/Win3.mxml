@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="375" height="298" fontWeight="normal" color="#3C210B" showCloseButton="false" title="数据表" fontSize="19">
+	<mx:Script>
+		<![CDATA[
+			 import mx.rpc.events.FaultEvent;
+		    import mx.rpc.events.ResultEvent;
+		    import mx.controls.Alert;
+			 
+	
+
+			
+			 
+			 import mx.managers.PopUpManager;
+		     
+		     
+		     public function Creat():void{
+		     	abc.TB_CREAT_TB.send();
+		     }
+         
+            
+            private function CreateTbSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功建立数据表");
+		    close();
+		    //PopUpManager.removePopUp(this);
+		}
+		   
+		   
+		   public function DefaultFault(event:FaultEvent):void {      
+         mx.controls.Alert.show(event.fault.faultString, "Error");               
+            }
+         
+          private function close():void
+            {
+                dispatchEvent(new Event("myEvent"));    
+                PopUpManager.removePopUp(this);
+            }
+            
+           private function ty():void
+            {
+                 mx.controls.Alert.show(parentDocument.st.text,"详细消息");  
+            }
+            
+            
+		]]>
+	</mx:Script>
+	
+	<mx:RemoteObject id="abc" destination="ww" fault="DefaultFault(event)">
+	  <mx:method name="TB_CREAT_TB" result="CreateTbSuccess(event)">
+	        <mx:arguments>
+                <arg1>{parentarg.text}</arg1>
+            
+                <arg3>{NameTb.text}</arg3>
+            </mx:arguments>
+	  </mx:method>
+	</mx:RemoteObject>
+	
+	
+	
+	<mx:Panel id="operte" x="75" y="20" width="199" height="189" layout="absolute" title="    请输入数据表名" fontSize="19" themeColor="#419FDA" fontWeight="normal" color="#ED5B2E" fontStyle="italic" fontFamily="Georgia">
+		<mx:TextInput id="NameTb" borderStyle="solid" borderColor="#0080ff" x="10" y="10" height="47"/>
+		<mx:Button x="103" y="95" label="取消" click="close()"/>
+		<mx:Button x="10" y="95" label="确定" click="Creat()"/>
+	</mx:Panel>
+	<mx:Panel id="Info" visible="false" x="38" y="10" width="279" height="212" layout="absolute" fontSize="19" themeColor="#419FDA" fontWeight="normal" color="#ED5B2E" fontStyle="italic" fontFamily="Georgia">
+		<mx:Label x="6" y="56" text="您已经成功建立了数据库" fontWeight="bold" fontSize="21"/>
+	</mx:Panel>
+	<mx:Text id="CreateDbNamelabel" x="299" y="208"/>
+	<mx:Label id="parentarg" x="289" y="135" text="{parentApplication.uName.text}" visible="false"/>
+	<mx:Label id="NameDb" x="289" y="135" text="{parentDocument.NodeName.text}" />
+
+	  
+</mx:TitleWindow>

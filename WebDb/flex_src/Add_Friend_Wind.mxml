@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" layout="absolute" width="354" height="204"  fontSize="12" borderColor="#E2E2E2" fontWeight="bold" title="添加联系人">
+	<mx:Script>
+		<![CDATA[
+			        import mx.managers.PopUpManager;	       
+			        import mx.controls.Alert;
+			         import mx.rpc.events.FaultEvent;
+		            import mx.rpc.events.ResultEvent;
+		            import mx.collections.ArrayCollection;
+		            public var friend:ArrayCollection=new ArrayCollection();
+		            
+			        private function cancel( ):void
+				    {
+		 			   PopUpManager.removePopUp(this);
+				    }
+				    
+				     private function AddUser( ):void
+				    {
+				    	if(UName.text==""||NickName.text=="")
+		 			       mx.controls.Alert.show("请先输入联系人信息");
+		 			    else if(HasAdded(UName.text))
+		 			    {
+		 			    	 mx.controls.Alert.show("该用户已在您的通讯录中");
+		 			    }
+		 			    else
+		 			      addInfo.AddFriend(UserName.text,UName.text,NickName.text);
+		 			       
+				    }
+				    
+				    private function HasAdded(UName:String):Boolean
+				    {
+				    	var flag:Boolean=false;
+				    	 for(var i:int=0;i<friend.length;i++)
+				    	   if(UName==friend[i].label)
+				    	    {
+				    	    	flag=true;
+				    	    	break;
+				    	    }   
+				    	return flag;    
+				    }
+				    
+				     //成功注册
+	                private function SucAdd(event:ResultEvent):void
+	                {		     
+			            var res:String = event.result.toString();
+	    	            if(res=="No Exist")
+	    	               mx.controls.Alert.show("此用户不存在，请输入正确的用户名");
+				    	else
+				    	  {
+				    	  	 mx.controls.Alert.show("添加成功");
+				    	  	 dispatchEvent(new Event("addFriend")); 
+				    	  	 PopUpManager.removePopUp(this);	 
+				    	  } 
+                    }
+		              
+					//出错处理
+					public function defaultFault(event:FaultEvent):void 
+					{      
+			             mx.controls.Alert.show(event.fault.faultString, "Error");               
+			        }
+				    
+		]]>
+	</mx:Script>
+	
+
+     
+     <mx:RemoteObject id="addInfo" destination="DB" fault="defaultFault(event)">
+	       <mx:method name="AddFriend" result="SucAdd(event)"/>	       
+	</mx:RemoteObject>
+   
+	
+	<mx:Label x="32" y="20" text="用户名：" fontWeight="bold" fontSize="20"/>
+	<mx:Label x="33" y="68" text="昵称：" fontSize="20"/>
+	<mx:TextInput id="UName" x="115" y="24" height="27"/>
+	<mx:TextInput id="NickName" x="115" y="75" height="27"/>
+	<mx:Button x="167" y="119" label="确定" fontSize="20" click="AddUser()"/>
+	<mx:Button x="255" y="119" label="取消" fontWeight="bold" fontSize="20" click="cancel()"/>
+	  
+	  <mx:Text id="UserName" text="{parentApplication.uName.text}" visible="false" x="10" y="132"/>
+	 
+	
+</mx:TitleWindow>

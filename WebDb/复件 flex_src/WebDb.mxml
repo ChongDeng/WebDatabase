@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"  xmlns:local="*"  >
+	<mx:states>
+		<mx:State name="state2"/>
+	</mx:states>
+	
+	<mx:Script>
+	<![CDATA[
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		import mx.controls.Alert;
+		
+		//用户登录
+		private function userLog():void{
+		remoteLogin.getPass.send();
+		}
+	    //登陆跳转注册
+	    private function GoReg():void{
+		 UserLogin.visible=false;
+		 ReG.visible=true;
+		}
+	    //用户名是否可用
+	    private function ChcekUser():void{
+	       remoteLogin.check.send();
+	    }
+	    
+	    //用户注册
+	    private function Reg():void{
+	    	remoteLogin.Regist.send();
+	    }
+	   
+	    private function CheckBack(event:ResultEvent):void{
+	    	var corecctPass:String = event.result.toString();
+	    	if(corecctPass=="1")
+	    	      tell.text="不可用";
+	    	else
+	    	      tell.text="可用";
+	    }
+	    //登陆是否成功
+		private function checkLogin(event:ResultEvent):void{
+		       var corecctPass:String = event.result.toString();
+				 if(pass.text ==corecctPass){
+				         mx.controls.Alert.show("成功登录","消息");
+				         UserLogin.visible=false;
+				         cata.visible=true;
+				         cata.selectedIndex=0;
+				         
+			        }
+		        else
+		                 mx.controls.Alert.show("密码错或者用户名不存在","消息");
+		}
+	
+	    //成功注册
+	    private function RegistSuccess(event:ResultEvent):void{
+		    var result:Boolean=event.result;
+		    if(result)
+		       {   
+			       mx.controls.Alert.show("成功注册","消息");
+				   RegName.text="";
+				   RegPass.text="";
+				   ReG.visible=false;
+				   UserLogin.visible=true;
+		       }
+        }
+		             
+		//出错处理
+		public function defaultFault(event:FaultEvent):void {      
+         mx.controls.Alert.show(event.fault.faultString, "Error");               
+            }
+       
+     
+	]]>
+</mx:Script>
+
+
+
+<mx:RemoteObject id="remoteLogin" destination="Proc" fault="defaultFault(event)">
+	  <mx:method name="getPass" result="checkLogin(event)">
+            <mx:arguments>
+                <name>{uName.text}</name>
+            </mx:arguments>
+     </mx:method>
+     
+     <mx:method name="check" result="CheckBack(event)">
+            <mx:arguments>
+                <name>{RegName.text}</name>
+            </mx:arguments>
+     </mx:method>
+     
+     <mx:method name="Regist" result="RegistSuccess(event)">
+            <mx:arguments>
+                <name>{RegName.text}</name>
+                <pass>{RegPass.text}</pass>
+            </mx:arguments>
+     </mx:method>
+</mx:RemoteObject>
+	
+	
+	
+	<mx:Canvas width="1024" height="54" borderStyle="none" borderThickness="3">
+		<mx:Label x="324" y="10" text="在线数据库" width="242" height="45" fontSize="27" fontWeight="bold" textAlign="center"/>
+    </mx:Canvas>
+   
+   
+    <mx:Panel  id="ReG" x="23" y="114" width="306" height="294" layout="absolute" title="用户注册" fontSize="14" visible="false">
+	        <mx:FormItem label="  用户名" x="10" y="22" width="228" height="32" fontSize="14" fontWeight="bold">
+				<mx:TextInput id="RegName" height="32" width="154"/>
+			</mx:FormItem>
+			<mx:FormItem label="  密   码" x="10" y="98" height="34" fontSize="14" fontWeight="bold" width="228">
+				<mx:TextInput id="RegPass" displayAsPassword="true" height="34" width="154"/>
+			</mx:FormItem>
+			<mx:Button x="163" y="157" label="注册" click="Reg()"/>
+			<mx:Button x="19" y="62" label="检查该用户名是否可用" height="19" click="ChcekUser()"/>
+			<mx:Label  id="tell" x="217" y="62" width="59" height="32"  fontWeight="bold" color="#180B3C"/>
+	
+	</mx:Panel>
+	
+      <mx:ViewStack  id="cata"  x="0" y="0"  width="100%" height="100%" visible="false">
+			<local:face  id="mainPage" width="100%" height="100%" label="主页"  />	
+			<local:MultiDB_TO_XML label="数据库与数据表操作" width="100%" height="100%" id="bt" />
+	  </mx:ViewStack>
+      <mx:Canvas x="0" y="62" width="100%" height="117">
+            <mx:TabNavigator x="0" y="0" width="100%" height="109">
+                  <mx:Canvas label="SQL查询" width="100%" height="100%">
+                        <mx:Button x="205" y="0" label="创建查询" width="118" height="71"/>
+                  </mx:Canvas>
+                 
+                  <mx:Canvas label="外部数据" width="100%" height="100%">
+                        <mx:Canvas x="10" y="0" width="338" height="100%">
+                              <mx:HRule x="0" y="43" width="338"/>
+                              <mx:Label x="0" y="43" width="338" height="28" text="                       导入" fontWeight="bold" fontSize="17"/>
+                              <mx:Button x="0" y="0" label="Access" height="45" width="77"/>
+                              <mx:Button x="119" y="0" label="Excel" height="45" width="70"/>
+                              <mx:Button x="220" y="0" label="文本文件" height="45" fontWeight="bold"/>
+                        </mx:Canvas>
+                        <mx:Canvas x="431" y="0" width="338" height="100%">
+                              <mx:HRule x="0" y="43" width="338"/>
+                              <mx:Label x="0" y="43" width="338" height="28" text="                       导出" fontWeight="bold" fontSize="17"/>
+                              <mx:Button x="0" y="0" label="Access" height="45" width="77"/>
+                              <mx:Button x="107" y="0" label="Excel" height="45" width="70"/>
+                              <mx:Button x="220" y="0" label="文本文件" height="45" fontWeight="bold"/>
+                        </mx:Canvas>
+                  </mx:Canvas>
+            </mx:TabNavigator>
+      </mx:Canvas>
+      <mx:Canvas x="0" y="187" width="100%" height="333">
+            <mx:Panel  id="UserLogin" x="581" y="10" width="258" height="266" layout="absolute" title="用户登陆" fontSize="14" >
+               <mx:FormItem label="  用户名" x="9" y="22" width="211" height="32" fontSize="14" fontWeight="bold">
+               	<mx:TextInput id="uName" height="32" width="136"/>
+               </mx:FormItem>
+             		<mx:FormItem label="  密   码" x="10" y="79" height="34" fontSize="14" fontWeight="bold" width="210">
+             			<mx:TextInput id="pass" displayAsPassword="true" height="34" width="135"/>
+             		</mx:FormItem>
+             		<mx:Button x="145.5" y="138" label="登录" cornerRadius="6" click="userLog()" fontSize="13"/>
+             		<mx:LinkButton x="10" y="172" label="注册新用户" fontSize="12" click="GoReg()"/>
+            </mx:Panel>
+      </mx:Canvas>
+  
+    
+</mx:Application>

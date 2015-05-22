@@ -1,0 +1,53 @@
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" title="导入Access向导" layout="absolute" width="468" height="304" borderColor="#E2E2E2">
+	<mx:Script>
+		<![CDATA[
+			      import mx.controls.Alert;
+			      import mx.managers.PopUpManager;
+			      import mx.rpc.events.FaultEvent;
+				  import mx.rpc.events.ResultEvent;
+				 
+			      public var PathStr:String;    //PathStr保存从ImportGuide2传过来的本地文件地址
+			  
+			
+			 
+			  private function cancel( ):void
+				{
+		 			PopUpManager.removePopUp(this);
+				}
+				
+				  private function confirm( ):void
+				{
+		 			var UserStr:String=UserName.text+"$"+DbName.text+"$"+PathStr;
+		 			ReadAccess.ToDB(UserStr);
+		 			
+				}
+				
+				 
+				 //成功转换Access数据库到Mysql数据库
+		           private function SucRead(event:ResultEvent):void
+			      {
+					 mx.controls.Alert.show("Done Success!");  
+					 dispatchEvent(new Event("myEvent2")); 
+					 cancel();
+					 
+				  }
+				 //转换Access数据库到Mysql数据库失败
+				    private function FaultRead(event:FaultEvent):void
+			      {
+					 mx.controls.Alert.show(event.fault.faultString);  
+					 
+				  }
+				  
+				  
+		]]>
+	</mx:Script>
+	 <mx:RemoteObject id="ReadAccess" destination="AccessToDb" result="SucRead(event)" fault="FaultRead(event)"/>
+	 
+	<mx:Button x="362" y="213" label="确定" fontSize="18" fontWeight="bold" id="button5" click="confirm()"/>
+	<mx:Button x="264" y="213" label="取消" fontSize="18" fontWeight="bold" id="button0" click="cancel()"/>
+	<mx:Label x="104" y="60" text="请为您的目的数据库命名" fontWeight="bold" fontSize="17"/>
+	<mx:TextInput x="129" y="106" height="29" id="DbName"/>
+	 <mx:Text id="UserName" x="10" y="10" text="{parentApplication.uName.text}" visible="false"/>
+ 
+ 
+</mx:TitleWindow>

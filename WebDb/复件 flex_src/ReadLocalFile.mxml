@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()">
+<mx:Script>
+     <![CDATA[
+     	import mx.controls.Alert;
+       
+       private function init():void
+       {
+           ExternalInterface.addCallback("OnFileChange",frSelectHandler);//注册JS回调
+           btnBrowser.addEventListener(MouseEvent.CLICK,mouseClickHandler);
+       }
+       
+       private function mouseClickHandler(event:MouseEvent):void
+       {
+          ExternalInterface.call("alert('a');");//调用JS中Browser函数
+       }
+       
+       private function frSelectHandler(path:String):void
+       {
+          
+           mx.controls.Alert.show(path);
+           //imgTest.source = path;
+       }
+     ]]>
+</mx:Script>
+     <mx:Button id="btnBrowser" x="191" y="73" label="地址" />
+     <mx:Image id="imgTest"   x="10" y="50"/>
+     <mx:Button x="248" y="189" label="大爷"/>
+</mx:Application>
+

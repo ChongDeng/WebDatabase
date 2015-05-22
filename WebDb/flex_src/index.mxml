@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
+	<mx:Style>
+    	            AccordionHeader{
+    	            	color:#FF00FF;
+    	            	fontSize:18
+    	            }
+    </mx:Style>    
+	
+	<mx:Script>
+		<![CDATA[
+			           import mx.controls.Tree;
+			           import mx.rpc.events.FaultEvent;
+		               import mx.rpc.events.ResultEvent;
+		               import mx.controls.Alert;
+		               import mx.collections.ArrayCollection;
+		               import mx.events.TreeEvent;
+        	           import mx.events.ListEvent;
+		               import mx.managers.PopUpManager;
+                       import mx.containers.TitleWindow;
+           
+                       import flash.display.Sprite;
+				       import flash.ui.ContextMenu;
+				       import flash.ui.ContextMenuItem;
+				       import flash.events.ContextMenuEvent;
+		
+						private var menu1:ContextMenuItem;
+				        private var menu2:ContextMenuItem;
+				        private var menu3:ContextMenuItem;
+				        private var menu4:ContextMenuItem;
+				        private var menu5:ContextMenuItem;
+				        private var menu6:ContextMenuItem;
+				        private var menu7:ContextMenuItem;
+				        private var menuSqlExport:ContextMenuItem;
+				        private var menuShare:ContextMenuItem;  
+				        
+				       //PareNode存储父节点信息  CurrentNode存储当前节点信息  两者将传递给子窗口
+				       public var PareNode:String=new String;
+				       public var CurrentNode:String=new String;				    
+				  	   private var photoData:XML;
+				  	   private var fileViewWindow:FileReference = new FileReference();
+				  	   //用来保存通讯录
+                       public var friendArr:ArrayCollection=new ArrayCollection();
+                       
+                       
+                       private var TbSharedArr:ArrayCollection=new ArrayCollection;                                      
+                       private var TbSharingArr:ArrayCollection=new ArrayCollection;
+                       public var Full_TbSharedName:String;
+                     
+                       
+                       public var UserDbTb:String;
+                       
+                       
+			            //用户登录
+						private function userLog():void{
+						  user.getPass.send();
+						}
+					    //登陆跳转注册
+					    private function GoReg():void{
+						   UserLogin.visible=false;
+		                   ReG.visible=true;
+						}            
+						//用户名是否可用
+					    private function ChcekUser():void{
+					       user.check.send();
+					    }
+	    
+					    //用户注册
+					    private function Reg():void{
+					    	user.Regist.send();
+					    }
+					    
+					    private function CheckBack(event:ResultEvent):void{
+					    	var corecctPass:String = event.result.toString();
+					    	if(corecctPass=="1")
+					    	      tell.text="不可用";
+					    	else
+					    	      tell.text="可用";
+					    }
+					    
+					    //登陆是否成功
+						private function checkLogin(event:ResultEvent):void{
+						       var corecctPass:String = event.result.toString();
+								 if(pass.text ==corecctPass){
+								         mx.controls.Alert.show("成功登录","消息");
+								         Init_Step2();								       
+								         this.currentState='State2';			       
+								         
+							        }
+						        else
+						                 mx.controls.Alert.show("密码错或者用户名不存在","消息");
+						}
+	
+					    //成功注册
+					    private function RegistSuccess(event:ResultEvent):void{
+						    var result:Boolean=event.result;
+						    if(result)
+						       {   
+							       mx.controls.Alert.show("成功注册","消息");
+								   RegName.text="";
+								   RegPass.text="";
+								   ReG.visible=false;
+								   UserLogin.visible=true;
+						       }
+				        }
+						             
+						//出错处理
+						public function defaultFault(event:FaultEvent):void {      
+				          mx.controls.Alert.show(event.fault.faultString, "Error");               
+				        }
+				       
+				       //登陆成功后的一些列初始化
+				        public function Init_Step2():void {
+				        	SqlButton.visible=true;
+				        	ImButton.visible=true;
+				        	ExButton.visible=true;
+				        	UserLogin.visible=false;
+				        	label2.visible=false;
+				        	label3.visible=false;
+				        	//myTree.visible=true;
+				        	myPanel.visible=true;
+				        	ContactPanel.visible=true;
+				        	rPanel.visible=true
+				        	displayName.getDbTb( ); //获取用户创建的数据库和数据表
+				        	getFriend.getFName(uName.text); //获取通讯录
+				        	getTbSharing.TbName_Sharing(uName.text); //获取他人与您共享的数据表名字	
+				        	getTbShared.TbName_Shared(uName.text); //获取您与他人共享的数据表名字	
+				        	
+				        	menu1= new ContextMenuItem("新建数据库");
+		                    menu3 = new ContextMenuItem("删除该数据库");
+		                    menu4 = new ContextMenuItem("新建表");		      
+						    menu5 = new ContextMenuItem("重命名该数据表");
+						    menu6 = new ContextMenuItem("删除该表");						    
+						    menuSqlExport=new ContextMenuItem("转储SQL文件");
+						    menuShare = new ContextMenuItem("共享该文件");
+				        	
+                             menu1.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,CreateDb); 				        	
+				        	 menu3.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,DropD);				        	
+				        	 menu4.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,NewT);
+				        	 menu5.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,ReNTb);	     
+		                     menu6.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,DelT);
+		                     menuSqlExport.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,SqlExportFunc);
+		                     menuShare.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,ShareFunc);
+				        }   
+		
+				      //成功获取用户创建的数据库和数据表
+				       private function Suc(event:ResultEvent):void
+					    {
+						   		var s:String = event.result.toString();
+						   		photoData=new XML(s);
+						   		myTree.dataProvider=photoData;
+					   	}
+				       
+				       //成功获取通讯录
+					    private function sucGetFriend(event:ResultEvent):void
+					    {
+						    friendArr=ArrayCollection(event.result);				
+						    fTree.dataProvider=friendArr;
+						         
+						}
+						
+					   //为 "您创建的数据库" 创建的菜单		
+					   private function Menu1():void
+					   {
+					   	var MyMenu3:ContextMenu = new ContextMenu();
+						      MyMenu3.hideBuiltInItems();
+						      MyMenu3.customItems.push(menu1);
+						       myTree.contextMenu = MyMenu3;
+					   }
+					     //为 数据库文件夹 创建的菜单	
+					    private function Menu2():void
+					   {
+					   	      var MyMenu4:ContextMenu = new ContextMenu();
+						      MyMenu4.hideBuiltInItems();
+						      
+						      MyMenu4.customItems.push(menu1);
+						      MyMenu4.customItems.push(menu3);  
+						      MyMenu4.customItems.push(menu4);
+						      MyMenu4.customItems.push(menuSqlExport);
+						      myTree.contextMenu = MyMenu4;
+					   }		
+					   		 
+					     //为 叶子节点数据表 创建的菜单	
+					    private function Menu3():void
+					   {
+					   	      var MyMenu5:ContextMenu = new ContextMenu();
+						      MyMenu5.hideBuiltInItems();
+						      MyMenu5.customItems.push(menu5);
+						      MyMenu5.customItems.push(menu6);						     
+				              MyMenu5.customItems.push(menuSqlExport);
+				              MyMenu5.customItems.push(menuShare);
+					          myTree.contextMenu = MyMenu5;
+					   }	
+												       
+					   //单击"您创建的数据库"中的Tree时触发的函数
+				       private function quzhi(evt:ListEvent):void
+				       {
+				              //获取父节点
+				               var theParentItem:Object, asd:Object, tt:Tree;							   
+				               var t:Tree = evt.currentTarget as Tree;					          
+					           // NodeName为当前节点  
+					           NodeName.text=evt.target.selectedItem.@item;
+					           // CurrentNode为当前节点       
+					           CurrentNode=evt.target.selectedItem.@item;
+					           
+					           if (t.dataDescriptor.isBranch(t.selectedItem))
+					               {  
+					                  wenjianjia.text="文件夹";			                 
+					                  if(NodeName.text=="您创建的数据库")
+					                      {				                      	
+					                      	 Menu1();
+					                      }
+					                  else
+					                       {
+					                            theParentItem=myTree.selectedItem;
+											    tt=Tree(evt.target);
+											    asd = tt.getParentItem(theParentItem);
+											    // PareNode为父亲节点   
+											    PareNode=asd.@item;								                
+					                            Menu2();
+					                       }
+					               }
+					           else
+					              {
+					                 wenjianjia.text="文件";				                
+					                 Tb.text=evt.target.selectedItem.@item;
+					                 
+					                            theParentItem=myTree.selectedItem;
+											    tt=Tree(evt.target);
+											    asd = tt.getParentItem(theParentItem);
+											    // PareNode为父亲节点 
+											    PareNode=asd.@item;
+								                // PareNodeName为父亲节点 
+								                PareNodeName.text=asd.@item;
+								                Menu3();
+					              }  
+					         UserDbTb=uName.text+"$"+PareNode+"$"+CurrentNode; 
+				       }
+				       
+				       //单击"他人与您分享的数据表"中的Tree时触发的函数
+				        private function Sharing_Click(evt:ListEvent):void
+				       {
+				          CurrentNode=evt.target.selectedItem.data;
+				         
+				          var menuDel:ContextMenuItem= new ContextMenuItem("删除该共享文件");
+		                  menuDel.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,Del_SharePri);
+		                  var MyMenu:ContextMenu = new ContextMenu();
+		                  MyMenu.hideBuiltInItems();
+		                  MyMenu.customItems.push(menuDel);
+		                  SharingTree.contextMenu = MyMenu;
+				       }
+				
+				        //修改用户的共享权限      
+					    private function Del_SharePri(evt:ContextMenuEvent):void 
+					     {
+						       DoDelete.Del_ShareTb(CurrentNode);
+					     }
+					     
+					     
+					     
+					     //成功删除其他用户共享自己的数据表
+					      private function SucDel(event:ResultEvent):void
+					      {						      
+						        mx.controls.Alert.show("已成功删除该共享文件");
+						        getTbSharing.TbName_Sharing(uName.text); //获取他人与您共享的数据表名字							          
+						  }
+						  
+								
+				          //单击"通讯录"中的Tree时触发的函数
+				        private function Contact_Click(evt:ListEvent):void
+				       {
+				          CurrentNode=evt.target.selectedItem.label;				         
+				          var Del_Fri:ContextMenuItem= new ContextMenuItem("删除该好友");
+		                  Del_Fri.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,Del_Friend);
+		                  var MyMenu:ContextMenu = new ContextMenu();
+		                  MyMenu.hideBuiltInItems();
+		                  MyMenu.customItems.push(Del_Fri);
+		                  fTree.contextMenu = MyMenu;		                 
+				       }
+				       
+				        //修改用户的共享权限      
+					    private function Del_Friend(evt:ContextMenuEvent):void 
+					     {
+						       Friend.DelFriend(uName.text,CurrentNode);
+					     }
+					    
+					      //成功删除该好友
+					      private function SucDelFriend(event:ResultEvent):void
+					      {						      
+						        mx.controls.Alert.show("已成功删除该好友");
+						       	getFriend.getFName(uName.text); //获取通讯录
+				        	    getTbSharing.TbName_Sharing(uName.text); //获取他人与您共享的数据表名字	
+				        	    getTbShared.TbName_Shared(uName.text); //获取您与他人共享的数据表名字				          
+						  }
+				  
+				         //双击弹出表格窗口，编辑数据
+						 private function DoubleClicK(evt:ListEvent):void
+						 {
+						       //获取父节点
+						       var theParentItem:Object, asd:Object, tt:Tree;
+						       var t:Tree = evt.currentTarget as Tree;
+							  CurrentNode=evt.target.selectedItem.@item;
+							   //注意这里测试过PareNode是正确的，好像是因为双击的处理默认了单击的处理        
+				               //得到“用户名$数据库名$数据表名”的表名，因为数据表在MysQL中就是以这种名字保存的
+					           UserDbTb=uName.text+"$"+PareNode+"$"+CurrentNode;
+					         //  mx.controls.Alert.show(PareNode+","+CurrentNode);
+							        
+					           if (t.dataDescriptor.isBranch(t.selectedItem))
+					           {  
+							                
+					            }
+					           else
+					            {
+							         var PopTable:PoP_Table= new PoP_Table();
+							         PopTable.CurNode=UserDbTb;    
+				                     PopUpManager.addPopUp(PopTable,this,true); 
+				                     PopUpManager.centerPopUp(PopTable); 
+							     }
+						 }
+						 
+						  //双击"他人与您分享的数据表"中的表，弹出表格窗口
+						 private function Sharing_DoubleClicK(evt:ListEvent):void
+						 {
+						      var Str:String=evt.target.selectedItem.data;
+						      PoP_Sharing.getUTbName(uName.text,Str);						      
+						 }
+						 
+						 
+						 
+						  //成功得到授权用户的真实数据表名
+					      private function sucName(event:ResultEvent):void
+					      {						      
+						        var Str:String=event.result.toString();
+						        var UTbName:String;
+						        var Editable:String;
+						        
+						        var position:int=Str.lastIndexOf("$"); 
+						        UTbName=Str.substring(0,position); 
+                                Editable=Str.substring(position+1,Str.length);
+						       						        
+						        var PopTable:Pop_TbSharing= new Pop_TbSharing();
+			                    PopTable.CurNode=UTbName;  
+			                    PopTable.IsEditable=Editable;  
+                                PopUpManager.addPopUp(PopTable,this,true); 
+                                PopUpManager.centerPopUp(PopTable);
+						          
+						  }
+						 
+						   //双击"您与他人分享的数据表"中的表，弹出表格窗口
+						 private function Shared_DoubleClicK(evt:ListEvent):void
+						 {
+						      Full_TbSharedName=evt.target.selectedItem.data;
+						      
+						     /* 
+						        var PopTable:PoP_Table= new PoP_Table();
+			                    PopTable.CurNode=Full_TbSharedName;    
+                                PopUpManager.addPopUp(PopTable,this,true); 
+                                PopUpManager.centerPopUp(PopTable);
+                              */
+                              
+                                var PopTable:PoP_TbShared= new PoP_TbShared();
+			                    PopTable.CurNode=Full_TbSharedName;  
+			                    PopTable.FriendList=friendArr;  
+                                PopUpManager.addPopUp(PopTable,this,true); 
+                                PopUpManager.centerPopUp(PopTable);
+                                 
+						      
+						 }
+							
+							
+							
+								        
+				        //添加联系人
+				        private function AddFunc( ):void
+					     {
+					     	 var addWind:Add_Friend_Wind= new Add_Friend_Wind();
+					     	 addWind.friend=friendArr;	
+					     	 addWind.addEventListener("addFriend",addFriendHandler); 	 	   
+					         PopUpManager.addPopUp(addWind,this,true);	         	        
+					         PopUpManager.centerPopUp(addWind);   
+					     }
+					     
+				         //当用户添加了好友时，将刷新通讯录，使新加的好友在通讯录中显示
+					     private function addFriendHandler(event:Event):void
+					      {
+					         getFriend.getFName(uName.text); //获取通讯录
+					      } 
+					      
+					      
+					       //删除数据库       
+					     private function DropD(evt:ContextMenuEvent):void 
+					     {
+						       Del_DbTb.DropDb();
+						 }     
+					      //在数据表上删除数据表     
+					      private function DelT(evt:ContextMenuEvent):void 
+					     {
+						       Del_DbTb.DeleteTb();
+					     }
+									   
+									   
+						  //成功删除数据库
+					      private function DropDbSuccess(event:ResultEvent):void
+					      {
+						      mx.controls.Alert.show("成功删除数据库","消息");
+						      displayName.getDbTb( );	//刷新用户创建的数据库、数据表           
+						  }
+						
+					      //成功在数据表上删除数据表
+					      private function DeleteTbSuccess(event:ResultEvent):void
+					      {
+						      mx.controls.Alert.show("成功删除数据表","消息");
+						      displayName.getDbTb( );   //刷新用户创建的数据库、数据表         
+						  }	
+						  
+						   //新建数据库       
+					     private function CreateDb(evt:ContextMenuEvent):void 
+					     {
+						       var creatDb:Create_Db=Create_Db(PopUpManager.createPopUp( this, Create_Db , true));
+						       creatDb.addEventListener("myEvent",Refresher);
+						       //将弹出窗口居中
+						       PopUpManager.centerPopUp(creatDb);
+					     }	
+					     
+					      //从数据库上新建数据表    最新版本 2009 10 13   
+					     private function NewT(evt:ContextMenuEvent):void 
+					     {
+						   var sss:TableWind = new TableWind();
+					       sss.CurNode=CurrentNode;   
+					       PopUpManager.addPopUp(sss,this,true); 
+					       sss.addEventListener("myEvent",Refresher);  
+					       PopUpManager.centerPopUp(sss);   
+					
+					     }	
+					     
+					     //重命名数据表     
+					      private function ReNTb(evt:ContextMenuEvent):void 
+					     {
+						       var ReNTable:Win4 = new Win4();  
+						        //数据库
+						       ReNTable.DbStr=PareNode; 
+					           //旧表名
+					           ReNTable.OldTable=CurrentNode;
+					       //rrr.personVO = personVO;   
+					       PopUpManager.addPopUp(ReNTable,this,true); 
+					       ReNTable.addEventListener("myEvent",Refresher);  
+					       PopUpManager.centerPopUp(ReNTable);  
+					     }
+					     
+					      //导为SQL文件  
+					     private function SqlExportFunc(evt:ContextMenuEvent):void 
+						 {       
+					         var DbName:String;
+						 	 var TbName:String;
+						 	 	              	 		 	 
+					         if(wenjianjia.text=="文件夹")           
+					          {             
+					             DbName=NodeName.text;
+					          }
+					         else
+					          {          
+					             DbName=PareNode;
+					             TbName=NodeName.text;
+					           }   
+					         sql.creatTempSql(uName.text,DbName,TbName);    
+					      
+					          //开始下载到本地	
+							 var Path:String=null;
+							 if(TbName==null)		        
+							      {
+							        var realFile:String=uName.text+"$"+DbName;
+							        Path="/space/"+realFile+".txt";
+							      }
+							 else
+							    Path="/space/"+uName.text+"$"+DbName+"$"+TbName+".txt";  
+							                               				
+						     var u:String = "http://localhost:8080/WebDb/down.jsp?file="+Path;
+							 var request:URLRequest = new URLRequest(u);				    
+							 fileViewWindow.download(request);   
+							 fileViewWindow.addEventListener(Event.COMPLETE, onComplete);
+							                       
+					     } 
+					     
+					     //成功创建临时文件
+					    private function SucCreateSql(event:ResultEvent):void
+					    {	    
+							
+						}
+						
+						
+						
+						private function onComplete(event:Event):void
+						{                    
+				             mx.controls.Alert.show("Done Success");
+				        } 
+					     
+					     
+					    //共享文件     
+				      private function ShareFunc(evt:ContextMenuEvent):void 
+				      {
+					       var shareFile:FileShare_Wind = new FileShare_Wind();
+					       shareFile.TbNameStr=CurrentNode;						  
+						   shareFile.UserDbTbName=UserDbTb;
+						   shareFile.FriendArray=friendArr;
+						   shareFile.addEventListener("refresh",RefreshTbShared);  
+				           PopUpManager.addPopUp(shareFile,this,true);     
+				           PopUpManager.centerPopUp(shareFile);				          
+				      } 
+				      
+				      
+					     private function RefreshTbShared(event:Event):void
+					      {
+							  getTbShared.TbName_Shared(uName.text); //获取共享的数据表名字												     	
+					          
+					      }
+					      
+					      //成功获取共享的数据表名
+					     private function sucgetTBShared(event:ResultEvent):void
+						 {									   
+							   var TbSharedArr_temp:ArrayCollection=ArrayCollection(event.result);
+							   TbSharedArr.removeAll();
+							   for(var i:int=0;i<TbSharedArr_temp.length;i++)  
+							    {
+	                                var obj:Object=new Object(); 
+           	                        obj.data=TbSharedArr_temp[i].label; 
+                                    
+                                    var position:int=TbSharedArr_temp[i].label.lastIndexOf("$");  
+                                    var FullName:String= TbSharedArr_temp[i].label;
+      	           	                var Res:String=FullName.substring(position+1,FullName.length);
+                                    obj.label=Res;
+                                    TbSharedArr.addItem(obj);						    
+							    }
+						 }
+						 
+						  //成功获取他人与您共享的数据表名
+					     private function sucgetTBSharing(event:ResultEvent):void
+						 {							  
+							  var TbSharingArr_temp:ArrayCollection=ArrayCollection(event.result);
+							  TbSharingArr.removeAll();
+							  
+							   for(var i:int=0;i<TbSharingArr_temp.length;i++)  
+							    {
+	                                var obj:Object=new Object(); 
+           	                        obj.data=TbSharingArr_temp[i].label; 
+                                    
+                                    
+                                    var FullName:String= TbSharingArr_temp[i].label;                                    
+                                    var position:int=FullName.lastIndexOf("$");  
+      	           	                var Res:String=FullName.substring(position+1,FullName.length);
+      	           	                
+      	           	                var Res2:String=FullName.substring(0,position);
+      	           	                var position2:int=Res2.lastIndexOf("$");
+      	           	                var Res3:String=Res2.substring(position2+1,Res2.length); 
+      	           	                
+                                    obj.label=Res+" (由"+Res3+"提供）";
+                                    TbSharingArr.addItem(obj);						    
+							    }
+							 
+							 
+							  //TbSharingArr=ArrayCollection(event.result);
+						 }
+					      
+					       //关闭弹出的窗口时，捕捉事件的函数
+					     private function Refresher(event:Event):void
+					      {
+					          displayName.getDbTb( );   //刷新用户创建的数据库、数据表   
+					      }     
+					      
+					     private function ImportFunc( ):void
+						 {
+						 	 var IGuide:ImportGuide2 = new ImportGuide2();
+						 	 IGuide.addEventListener("myEvent",Refresher);    
+					         PopUpManager.addPopUp(IGuide,this,true);	         	        
+					         PopUpManager.centerPopUp(IGuide);   
+						 }
+		 
+					    private function ExportFunc( ):void
+						 {
+						 	 var EGuide:ExportGuide= new ExportGuide();		 	   
+					         PopUpManager.addPopUp(EGuide,this,true);	         	        
+					         PopUpManager.centerPopUp(EGuide);   
+						 }   
+				        
+				         private function SQLRun( ):void
+						 {
+						 	 var SqlWindow:SQLWind = new SQLWind();   
+					         PopUpManager.addPopUp(SqlWindow,this,true);
+					         SqlWindow.addEventListener("SQLEvent",Refresher); 
+					         PopUpManager.centerPopUp(SqlWindow);   
+						 }
+						 
+						 private function ChangeEvent():void{
+							//if(accordion1.selectedIndex.toString()=="1")
+							  //mx.controls.Alert.show("Good");							
+						 }
+						 
+		]]>
+	</mx:Script>
+	
+	<mx:RemoteObject id="getFriend" destination="DB" result="sucGetFriend(event)" fault="defaultFault(event)"/>
+	
+	<mx:RemoteObject id="user" destination="Proc" fault="defaultFault(event)">
+	  <mx:method name="getPass" result="checkLogin(event)">
+            <mx:arguments>
+                <name>{uName.text}</name>
+            </mx:arguments>
+     </mx:method>
+     
+     <mx:method name="check" result="CheckBack(event)">
+            <mx:arguments>
+                <name>{RegName.text}</name>
+            </mx:arguments>
+     </mx:method>
+     
+     <mx:method name="Regist" result="RegistSuccess(event)">
+            <mx:arguments>
+                <name>{RegName.text}</name>
+                <pass>{RegPass.text}</pass>
+            </mx:arguments>
+     </mx:method>
+   </mx:RemoteObject>
+   
+    <mx:RemoteObject id="displayName" destination="DB" fault="defaultFault(event)">
+          <mx:method name="getDbTb" result="Suc(event)">
+              <mx:arguments>
+                <name>{uName.text}</name>
+            </mx:arguments>
+         </mx:method>       
+    </mx:RemoteObject>  
+    
+     <!--删除数据库、数据表-->
+     <mx:RemoteObject id="Del_DbTb" destination="ww" fault="defaultFault(event)">
+        <mx:method name="DropDb" result="DropDbSuccess(event)">
+	        <mx:arguments>
+                <arg1>{uName.text}</arg1>
+                <arg2>{NodeName.text}</arg2>
+            </mx:arguments>
+	  </mx:method>  
+	  <mx:method name="DeleteTb" result="DeleteTbSuccess(event)">
+	        <mx:arguments>
+                <arg1>{uName.text}</arg1>
+                <arg2>{PareNodeName.text}</arg2>
+                <arg3>{NodeName.text}</arg3>
+            </mx:arguments>
+	  </mx:method> 
+   </mx:RemoteObject>
+   
+     <!--用于创建临时SQL文件，供用户保存到本地-->
+    <mx:RemoteObject id="sql" destination="sqlExport" fault="defaultFault(event)">
+	       <mx:method name="creatTempSql" result="SucCreateSql(event)"/>	      
+	</mx:RemoteObject>
+	
+	 <!--获得"与他人分享的数据表"中的Tree的数据源-->
+	<mx:RemoteObject id="getTbShared" destination="DB" result="sucgetTBShared(event)" fault="defaultFault(event)"/>
+	
+	 <!--获得"他人与您分享的数据表"中的Tree的数据源-->
+	<mx:RemoteObject id="getTbSharing" destination="DB" result="sucgetTBSharing(event)" fault="defaultFault(event)"/>
+	
+	<!--删除其他用户共享给自己的文件-->
+	 <mx:RemoteObject id="DoDelete" destination="DB" result="SucDel(event)" fault="defaultFault(event)" >
+	 </mx:RemoteObject> 
+	
+	 <!--删除好友-->
+	  <mx:RemoteObject id="Friend" destination="DB" result="SucDelFriend(event)" fault="defaultFault(event)" >
+	 </mx:RemoteObject>      
+	
+	<mx:RemoteObject id="PoP_Sharing" destination="DB" result="sucName(event)" fault="defaultFault(event)"/>
+	
+	<mx:Image id="DbIcon" x="19" y="13" source="@Embed('icons/veg_pepper_yellow.jpg')"  width="85" height="49"/>
+	<mx:Label id="label1" x="94" y="17" text="欢迎使用Web Db" fontWeight="bold" fontSize="23"/>
+	<mx:Label id="label2" x="23" y="77" text="金山提供的在线数据库服务" fontWeight="bold" fontSize="20"/>
+	<mx:Label id="label3" x="24" y="116" text="Web Db的开发理念是：数据表可以更加直观、高效而实用。Web Db具有以下特点：" fontWeight="bold" fontSize="14"/>
+	
+	<mx:Panel  id="UserLogin" y="135" width="258" height="266" layout="absolute" title="用户登陆" fontSize="14" right="24">
+	   <mx:FormItem label="  用户名" x="9" y="22" width="211" height="32" fontSize="14" fontWeight="bold">
+	   	<mx:TextInput id="uName" height="32" width="136"/>
+	   </mx:FormItem>
+	 		<mx:FormItem label="  密   码" x="10" y="79" height="34" fontSize="14" fontWeight="bold" width="210">
+	 			<mx:TextInput id="pass" displayAsPassword="true" height="34" width="135"/>
+	 		</mx:FormItem>
+	 		<mx:Button x="145.5" y="138" label="登录" cornerRadius="6" click="userLog()" fontSize="13"/>
+	 		<mx:LinkButton x="10" y="172" label="注册新用户" fontSize="12" click="GoReg()"/>
+	</mx:Panel>
+	
+	<mx:Panel  id="ReG" y="141" width="306" height="294" layout="absolute" title="用户注册" fontSize="14" visible="false" right="27">
+	        <mx:FormItem label="  用户名" x="10" y="22" width="228" height="32" fontSize="14" fontWeight="bold">
+				<mx:TextInput id="RegName" height="32" width="154"/>
+			</mx:FormItem>
+			<mx:FormItem label="  密   码" x="10" y="98" height="34" fontSize="14" fontWeight="bold" width="228">
+				<mx:TextInput id="RegPass" displayAsPassword="true" height="34" width="154"/>
+			</mx:FormItem>
+			<mx:Button x="163" y="157" label="注册" click="Reg()"/>
+			<mx:Button x="19" y="62" label="检查该用户名是否可用" height="19" click="ChcekUser()"/>
+			<mx:Label  id="tell" x="217" y="62" width="59" height="32"  fontWeight="bold" color="#180B3C"/>
+	
+	</mx:Panel>
+	
+	
+	  <mx:Panel  id="myPanel" x="18" y="69" width="262" height="342" layout="absolute" visible="false" title="数据库与数据表">
+	  	  <mx:Accordion id="accordion1" height="100%" width="100%"  fontSize="14" change="ChangeEvent()">
+	  	      <!--子容器1 -->
+	  	      <mx:VBox label="您创建的数据库" width="100%" height="100%">
+	  	        
+	  	        <mx:Tree id="myTree" width="100%" height="100%" labelField="@item"
+	  	          	itemClick="quzhi(event)"
+	  	          	doubleClickEnabled="true" 
+	  	          itemDoubleClick="DoubleClicK(event)"/>
+	  	      </mx:VBox>
+	  	      <!--子容器2 -->
+	  	      <mx:VBox label="与他人分享的数据表" 
+	  	          width="100%" 
+	  	          height="100%">
+	  	              <mx:Tree id="ShareTree" width="100%" height="100%"  dataProvider="{TbSharedArr}"	  	          	          
+	  	          	           doubleClickEnabled="true" 
+	  	                       itemDoubleClick="Shared_DoubleClicK(event)"/>
+	  	      </mx:VBox>
+	  	      <!--子容器3 -->
+	  	      <mx:VBox label="他人与您分享的数据表" 
+	  	           width="100%" 
+	  	          height="100%">
+	  	            <mx:Tree id="SharingTree" width="100%" height="100%" dataProvider="{TbSharingArr}" 
+	  	            	   doubleClickEnabled="true" 
+	  	                   itemDoubleClick="Sharing_DoubleClicK(event)" itemClick="Sharing_Click(event)"/>
+	  	      </mx:VBox>      
+	  	  </mx:Accordion>
+	  </mx:Panel>
+	  <mx:Panel id="ContactPanel" x="18" y="419" width="262" height="182" layout="absolute" title="通讯录" color="#133C0B" visible="false">
+	      <mx:Tree id="fTree" x="0" y="0" width="100%" height="100%"  itemClick="Contact_Click(event)"></mx:Tree>
+	      <mx:ControlBar height="43" y="192">
+	          <mx:Spacer width="138" height="18"/>
+	          <mx:LinkButton label="添加联系人" click="AddFunc()"/>
+	          
+	      </mx:ControlBar>
+	  </mx:Panel>
+	  <mx:Panel  id="rPanel" x="288" y="69" width="100%" height="530" layout="absolute" visible="false">
+	  </mx:Panel>
+	  
+	        <mx:VBox x="849" y="7" visible="false">  
+                 <mx:Text id="wenjianjia" height="15" visible="true"/>
+                 <mx:Text id="NodeName" height="13" visible="true"/>
+                 <mx:Text id="Db"  height="10" visible="true"/>
+                 <mx:Text id="Tb"  height="10" visible="true"/>
+                 <mx:Text id="PareNodeName" height="10" visible="true"/>                
+            </mx:VBox> 
+	        <mx:Button id="ImButton" y="23" label="导入" fontSize="20" click="ImportFunc()" visible="false" right="105" fontWeight="bold"/>
+	        <mx:Button  id="ExButton" y="23" label="导出" fontSize="20" click="ExportFunc()" visible="false" right="24"/>
+	        <mx:Button  id="SqlButton" y="24" label="SQL查询" fontWeight="bold" fontSize="20" right="193" click="SQLRun()" visible="false"/>
+	
+</mx:Application>

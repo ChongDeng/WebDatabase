@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="323" height="186" fontWeight="normal" color="#3C210B" showCloseButton="false" title="新建数据库" fontSize="13">
+	<mx:Script>
+		<![CDATA[
+			 import mx.rpc.events.FaultEvent;
+		    import mx.rpc.events.ResultEvent;
+		    import mx.controls.Alert;
+			 
+			 
+			 import mx.managers.PopUpManager;
+		     public function CreaDb():void{
+		     	NewDb.CreateDb.send();
+		     }
+         
+            
+            private function CreateDbSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功建立数据库");
+		    close();
+		    //PopUpManager.removePopUp(this);
+		}
+		   
+		   
+		   public function DefaultFault(event:FaultEvent):void {      
+         mx.controls.Alert.show(event.fault.faultString, "Error");               
+            }
+         
+          private function close():void
+            {
+                dispatchEvent(new Event("myEvent"));    
+                PopUpManager.removePopUp(this);
+            }
+            
+           
+		]]>
+	</mx:Script>
+	
+	<mx:RemoteObject id="NewDb" destination="ww" fault="DefaultFault(event)">
+	  <mx:method name="CreateDb" result="CreateDbSuccess(event)">
+	        <mx:arguments>
+                <arg1>{parentarg.text}</arg1>
+                <arg2>{DbNm.text}</arg2>
+            </mx:arguments>
+	  </mx:method>
+	</mx:RemoteObject>
+
+	<mx:Label id="parentarg" x="151" y="12" text="{parentApplication.uName.text}" visible="false"/>
+	<mx:Label x="21" y="11" text="请输入数据库名:" fontWeight="bold" fontSize="14"/>
+	<mx:TextInput  id="DbNm" x="29" y="41" width="202" height="35"/>
+	<mx:Button x="131" y="98" label="确定" fontSize="17" click="CreaDb()"/>
+	<mx:Button x="221" y="98" label="取消" fontSize="17" click="PopUpManager.removePopUp(this);"/>
+	  
+</mx:TitleWindow>

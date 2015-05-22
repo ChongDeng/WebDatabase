@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" fontSize="14" initialize="init()">
+    <mx:Script>
+        <![CDATA[
+            import mx.events.TreeEvent;
+        	import mx.events.ListEvent;
+            import mx.controls.Alert;
+           
+           import mx.rpc.events.FaultEvent;
+		   import mx.rpc.events.ResultEvent;
+		   
+		   import mx.managers.PopUpManager;
+           import mx.containers.TitleWindow;
+           
+           import flash.display.Sprite;
+	       import flash.ui.ContextMenu;
+	       import flash.ui.ContextMenuItem;
+	       import flash.events.ContextMenuEvent;
+		
+		private var menu1:ContextMenuItem;
+        private var menu2:ContextMenuItem;
+        private var menu3:ContextMenuItem;
+        private var menu4:ContextMenuItem;
+        private var menu5:ContextMenuItem;
+        private var menu6:ContextMenuItem;
+        private var menu7:ContextMenuItem;
+        
+        //PareNode存储父节点信息  CurrentNode存储当前节点信息  两者将传递给子窗口
+        public var PareNode:String=new String;
+        public var CurrentNode:String=new String;
+        
+       import mx.controls.Alert;
+        
+		private var photoData:XML;
+								
+		private function init():void
+		{
+	   		
+	   		  photoList.getPhotoList();
+		   		
+		   	  menu1= new ContextMenuItem("新建数据库");
+		      menu3 = new ContextMenuItem("删除该数据库");
+		      menu4 = new ContextMenuItem("新建表");
+		      
+		      menu5 = new ContextMenuItem("重命名该数据表");
+		      menu6 = new ContextMenuItem("删除该表");
+		      //menu7与menu4不同，menu7用于在数据表上新建数据表，menu4用于在数据库上新建数据表
+		      menu7 = new ContextMenuItem("新建表");
+		    
+		    
+		      menu1.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,CreateDb);
+		      menu3.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,DropD);
+		      menu4.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,NewT);
+		      menu5.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,ReNTb);
+		      menu6.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,DelT);
+		      menu7.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,Tb_Crea_Tb);
+		      
+	      //这个就是把那些事件全部加到一起,放在ContextMenu上
+/*		      var MyMenu:ContextMenu = new ContextMenu();
+		      MyMenu.hideBuiltInItems();
+		      MyMenu.customItems.push(menu1);
+		      MyMenu.customItems.push(menu2);
+		      MyMenu.customItems.push(menu3);  
+		      MyMenu.customItems.push(menu4);  
+		    
+		      myTree.contextMenu = MyMenu;
+*/
+	   	}
+	   		
+	   //为 "您创建的数据库" 创建的菜单		
+	   private function Menu1():void
+	   {
+	   	var MyMenu3:ContextMenu = new ContextMenu();
+		      MyMenu3.hideBuiltInItems();
+		      MyMenu3.customItems.push(menu1);
+		       myTree.contextMenu = MyMenu3;
+	   }
+	     //为 数据库文件夹 创建的菜单	
+	    private function Menu2():void
+	   {
+	   	      var MyMenu4:ContextMenu = new ContextMenu();
+		      MyMenu4.hideBuiltInItems();
+		      
+		      MyMenu4.customItems.push(menu1);
+		      MyMenu4.customItems.push(menu3);  
+		      MyMenu4.customItems.push(menu4);
+		      myTree.contextMenu = MyMenu4;
+	   }		
+	   		 
+	     //为 叶子节点数据表 创建的菜单	
+	    private function Menu3():void
+	   {
+	   	      var MyMenu5:ContextMenu = new ContextMenu();
+		      MyMenu5.hideBuiltInItems();
+		      MyMenu5.customItems.push(menu5);
+		      MyMenu5.customItems.push(menu6);
+		      MyMenu5.customItems.push(menu7);
+  
+	          myTree.contextMenu = MyMenu5;
+	   }	
+	    
+	 //单击事件
+       private function quzhi(evt:ListEvent):void
+       {
+               //获取父节点
+               var theParentItem:Object, asd:Object, tt:Tree;
+			   
+               var t:Tree = evt.currentTarget as Tree;
+	          
+	           // NodeName为当前节点  
+	           NodeName.text=evt.target.selectedItem.@item;
+	           // CurrentNode为当前节点       
+	           CurrentNode=evt.target.selectedItem.@item;
+	           
+	           if (t.dataDescriptor.isBranch(t.selectedItem))
+	               {  
+	                  wenjianjia.text="文件夹";
+	                  
+	                  if(NodeName.text=="您创建的数据库")
+	                      {
+	                      	
+	                      	 Menu1();
+	                      }
+	                  else
+	                       {
+	                            theParentItem=myTree.selectedItem;
+							    tt=Tree(evt.target);
+							    asd = tt.getParentItem(theParentItem);
+							    // PareNode为父亲节点   
+							    PareNode=asd.@item;
+				                
+	                            Menu2();
+	                       }
+	               }
+	           else
+	              {
+	                 wenjianjia.text="文件";
+	                
+	                 Tb.text=evt.target.selectedItem.@item;
+	                 
+	                            theParentItem=myTree.selectedItem;
+							    tt=Tree(evt.target);
+							    asd = tt.getParentItem(theParentItem);
+							    // PareNode为父亲节点 
+							    PareNode=asd.@item;
+				                // PareNodeName为父亲节点 
+				                PareNodeName.text=asd.@item;
+				                Menu3();
+	              }
+         }
+
+    //双击弹出表格窗口，编辑数据
+		 private function DoubleClicK(evt:ListEvent):void
+		       {
+		               //获取父节点
+		               var theParentItem:Object, asd:Object, tt:Tree;
+					   
+		               var t:Tree = evt.currentTarget as Tree;
+			         
+			           CurrentNode=evt.target.selectedItem.@item;
+			           
+			           //得到“用户名$数据库名$数据表名”的表名，因为数据表在MysQL中就是以这种名字保存的
+			           var UserDbTb:String=UserName.text+"$"+PareNode+"$"+CurrentNode;
+			         
+			           if (t.dataDescriptor.isBranch(t.selectedItem))
+			               {  
+			                
+			               }
+			           else
+			              {
+			                    var PopTable:PoP_Table= new PoP_Table();
+			                    PopTable.CurNode=UserDbTb;    
+                                PopUpManager.addPopUp(PopTable,this,true); 
+                                PopUpManager.centerPopUp(PopTable); 
+			              }
+		         }
+
+
+		private function Suc(event:ResultEvent):void
+	    {
+		   		var s:String = event.result.toString();
+		   		photoData=new XML(s);
+		   		myTree.dataProvider=photoData;
+		
+	   	}
+           
+      
+         //刷新页面
+        private function init2():void
+        {
+	   		     photoList.getPhotoList();
+        }
+        
+      //出错处理
+	 public function defaultFault(event:FaultEvent):void 
+	 {      
+         mx.controls.Alert.show(event.fault.faultString, "Error");               
+     }   
+     
+     //新建数据库       
+     private function CreateDb(evt:ContextMenuEvent):void 
+     {
+	       var login:WinD=WinD(PopUpManager.createPopUp( this, WinD , true));
+	       login.addEventListener("myEvent",myEventHandler);
+	       //将弹出窗口居中
+	       PopUpManager.centerPopUp(login);
+     }
+     
+     
+     //关闭弹出的窗口时，捕捉事件的函数
+     private function myEventHandler(event:Event):void
+      {
+         //Alert.show("Catch Event Success.");
+           init2();
+      }
+           
+      //删除数据库       
+     private function DropD(evt:ContextMenuEvent):void 
+     {
+	       dbdrop.DropDb();
+	 }
+
+ 
+     //从数据库上新建数据表    最新版本 2009 10 13   
+     private function NewT(evt:ContextMenuEvent):void 
+     {
+	   var sss:TableWind = new TableWind();
+       sss.CurNode=CurrentNode;   
+       PopUpManager.addPopUp(sss,this,true); 
+       sss.addEventListener("myEvent",myEventHandler);  
+       PopUpManager.centerPopUp(sss);   
+
+     }
+     
+     //在数据表上新建数据表
+      private function Tb_Crea_Tb(evt:ContextMenuEvent):void 
+     {
+	       var TW:TableWind = new TableWind();  
+	       TW.CurNode=PareNode;   
+	       PopUpManager.addPopUp(TW,this,true); 
+	       TW.addEventListener("myEvent",myEventHandler);  
+	       PopUpManager.centerPopUp(TW);   
+	 }
+     
+     
+      //在数据表上删除数据表     
+      private function DelT(evt:ContextMenuEvent):void 
+     {
+	       dbdrop.DeleteTb();
+     }
+     
+     //重命名数据表     
+      private function ReNTb(evt:ContextMenuEvent):void 
+     {
+	       var ReNTable:Win4 = new Win4();  
+	        //数据库
+	       ReNTable.DbStr=PareNode; 
+           //旧表名
+           ReNTable.OldTable=CurrentNode;
+       //rrr.personVO = personVO;   
+       PopUpManager.addPopUp(ReNTable,this,true); 
+       ReNTable.addEventListener("myEvent",myEventHandler);  
+       PopUpManager.centerPopUp(ReNTable);  
+     }
+
+  
+     
+     //成功删除数据库
+	    private function DropDbSuccess(event:ResultEvent):void
+	    {
+		      mx.controls.Alert.show("成功删除数据库","消息");
+		      init2();
+		       
+		           
+		}
+	//成功在数据表上删除数据表
+	    private function DeleteTbSuccess(event:ResultEvent):void
+	    {
+		      mx.controls.Alert.show("成功删除数据表","消息");
+		      init2();
+		       
+		           
+		}
+		
+		 private function SQLRun( ):void
+		 {
+		 	 var SqlWindow:SQLWind = new SQLWind();   
+	         PopUpManager.addPopUp(SqlWindow,this,true);
+	         SqlWindow.addEventListener("SQLEvent",myEventHandler); 
+	         PopUpManager.centerPopUp(SqlWindow);   
+		 }
+		
+		 private function ImportFunc( ):void
+		 {
+		 	 var IGuide:ImportGuide2 = new ImportGuide2();
+		 	 IGuide.addEventListener("myEvent",myEventHandler);    
+	         PopUpManager.addPopUp(IGuide,this,true);	         	        
+	         PopUpManager.centerPopUp(IGuide);   
+		 }
+		 
+		  private function ExportFunc( ):void
+		 {
+		 	 var EGuide:ExportGuide= new ExportGuide();		 	   
+	         PopUpManager.addPopUp(EGuide,this,true);	         	        
+	         PopUpManager.centerPopUp(EGuide);   
+		 }
+	
+		   
+           
+        ]]>
+    </mx:Script>
+    
+     <mx:RemoteObject id="photoList" destination="DB" fault="defaultFault(event)">
+          <mx:method name="getPhotoList" result="Suc(event)">
+              <mx:arguments>
+                 <name>{UserName.text}</name>
+              </mx:arguments>
+         </mx:method>
+         
+        
+     </mx:RemoteObject>
+   
+   <mx:RemoteObject id="dbdrop" destination="ww" fault="defaultFault(event)">
+        <mx:method name="DropDb" result="DropDbSuccess(event)">
+	        <mx:arguments>
+                <arg1>{UserName.text}</arg1>
+                <arg2>{NodeName.text}</arg2>
+            </mx:arguments>
+	  </mx:method>
+	  
+	  
+	  <mx:method name="DeleteTb" result="DeleteTbSuccess(event)">
+	        <mx:arguments>
+                <arg1>{UserName.text}</arg1>
+                <arg2>{PareNodeName.text}</arg2>
+                <arg3>{NodeName.text}</arg3>
+            </mx:arguments>
+	  </mx:method>
+	  
+	 
+   </mx:RemoteObject>
+    
+     
+     
+    <mx:Panel title="用户的数据库与数据表" height="100%" width="100%" 
+        paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10" x="23" y="110">
+        <mx:HBox  width="100%" >
+          <mx:Button label="SQL查询" click="SQLRun()"/>
+          <mx:Spacer width="25"/>
+          <mx:Button label="导入" click="ImportFunc()"/>
+          <mx:Spacer width="25"/>
+          <mx:Button label="导出" click="ExportFunc()"/> 
+          
+        </mx:HBox>
+        <mx:Label width="100%" color="blue" text="选择数据库与数据表"/>
+        <mx:HBox  height="289" width="390">
+            <mx:Tree id="myTree" width="240" height="287" labelField="@item"
+            	itemClick="quzhi(event)"
+            	doubleClickEnabled="true" 
+            itemDoubleClick="DoubleClicK(event)"/>
+                         
+            <mx:VBox>         
+                 <mx:Text id="UserName" text="{parentApplication.uName.text}" visible="false"/>
+                 <mx:Text id="wenjianjia" height="15" visible="false"/>
+                 <mx:Text id="NodeName" height="13" visible="false"/>
+                 <mx:Text id="Db"  height="10" visible="false"/>
+                 <mx:Text id="Tb"  height="10" visible="false"/>
+                 <mx:Text id="PareNodeName" height="10" visible="false"/>
+            </mx:VBox>          
+        </mx:HBox>        
+    </mx:Panel>
+</mx:Canvas>

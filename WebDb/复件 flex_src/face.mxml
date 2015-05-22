@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300">
+	<mx:Label x="37" y="120" text="在线数据库主页" fontSize="36" color="#173C0B" fontWeight="bold" textAlign="center"/>
+</mx:Canvas>

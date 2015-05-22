@@ -1,0 +1,122 @@
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"  creationComplete="init()" title="导入—SQL脚本" layout="absolute" width="580" height="356"  fontSize="12" borderColor="#E2E2E2" fontWeight="bold">
+  <mx:Script>
+  	<![CDATA[
+  		          import mx.rpc.events.FaultEvent;
+				   import mx.rpc.events.ResultEvent;								 
+				   import mx.collections.ArrayCollection;	
+  		          import mx.controls.Text;
+  		           import mx.managers.PopUpManager;  
+  		          import flash.net.FileReference;
+  		           public var SqlfileName:Text= new Text; //SqlfileName用于存放获取的本地文件名字，并将此文件名字传到父窗口SQLWind中
+  		            public var DbName:Text= new Text; //DbName用于存放导入的目标数据库名字，并将此名字传到父窗口SQLWind中
+  		           private var fileViewWindow: FileReference=new FileReference();
+  		          private var ChooseFlag:Boolean;  //ChooseFlag用来在点击确定前，判断是否选了要导入的文件，如果没有选，那么不执行点击确定时运行的函数
+  		         
+  		            //DbArray存放用户已经创建过的数据库名
+				 private var DbArray:ArrayCollection=new ArrayCollection;			
+				
+  		         
+  		         public function init():void
+  		        {
+  		        	getName.getDbName.send();
+  		        	ChooseFlag=false;  //ChooseFlag初始化为没有选中文件的标志。  		        	
+  		        }
+  		        
+  		         //成功读取数据库名
+		         private function SucDbName(event:ResultEvent):void
+			      {
+					 DbArray=ArrayCollection(event.result);				
+					 Dbcomb.dataProvider=DbArray;	
+					 DbName.text=DbArray[0].label; //	DbForSent初始化为第一个数据库名
+				  }
+				    //读取数据库名失败、读取数据表名失败  
+				   private function defaultFault(event:FaultEvent):void
+			       {
+					  mx.controls.Alert.show(event.fault.faultString);  
+			       }
+  		        
+  		        private function browse():void
+  		        {
+  		        	fileViewWindow.addEventListener(Event.COMPLETE, onComplete);
+  		        	fileViewWindow.addEventListener(Event.SELECT, selectHandler);
+			  	    var txtType:FileFilter = new FileFilter("文本文件(*.txt)","*.txt");
+			  	    var sqlType:FileFilter = new FileFilter("SQL脚本文件(*.sql)","*.sql");
+                    var allTypes:Array = new Array(txtType,sqlType);
+                    fileViewWindow.browse(allTypes);    
+  		        }
+  		         
+			  private function upload():void
+			  {    
+			      if(!ChooseFlag)
+			           mx.controls.Alert.show("您还没有选择SQL脚本");
+			      else
+			      {
+			      	   ChooseFlag=false;
+			      	   var request: URLRequest = new URLRequest("http://localhost:8080/WebDb/servlet/FileUploaded");			      
+					   try
+					      {
+					      	fileViewWindow.upload(request);
+					      }
+					   catch (error:Error)
+					      {
+					       mx.controls.Alert.show("上传出错");
+					      }		    
+			      }     
+			     
+			  }
+			  
+			  private function selectHandler(event:Event):void
+			  {   			  	     
+		     	     SqlfileName.text=fileViewWindow.name;  	
+                     ChooseFlag=true;                
+                     fielName.text=fileViewWindow.name; 
+              }
+			  
+			  
+			   private function onComplete(event:Event):void{                   
+                    dispatchEvent(new Event("EventSendName"));               
+					close();                 
+               }   	
+               
+               private function close( ):void
+				{
+		 			PopUpManager.removePopUp(this);
+				}
+				
+				 private function ChooseDbName(event:Event):void 
+		 		   {
+		 			  DbName.text=Dbcomb.selectedItem.label;		 			 
+		 		   }
+				 
+  	]]>
+  </mx:Script>  
+  
+  <mx:RemoteObject id="getName" destination="Export" fault="defaultFault(event)">
+		  <mx:method name="getDbName" result="SucDbName(event)">
+	            <mx:arguments>
+	                <name>{UserName.text}</name>
+	            </mx:arguments>
+	     </mx:method>
+   </mx:RemoteObject>
+	     
+      <mx:Label x="46" y="144" text="请选择数据源" fontWeight="bold" fontSize="18"/>
+      <mx:Label x="81" y="185" text="文件名:" fontSize="17" height="22"/>
+      <mx:TextInput  id="fielName" x="150" y="186" width="183"/>
+      <mx:Button x="360" y="179" label="浏览…" height="35" fontSize="16" click="browse()"/>
+      <mx:Button x="370" y="261" label="取消" fontWeight="bold" fontSize="20" click="close()"/>
+      <mx:Button x="466" y="260" label="确定" fontWeight="bold" fontSize="20" click="upload()"/>    
+      <mx:HRule x="173" y="154" width="336"/>
+      <mx:HRule x="20" y="154" width="28"/>
+      <mx:HRule x="20" y="245" width="489"/>
+      <mx:VRule x="20" y="154" height="93"/>
+      <mx:VRule x="507" y="154" height="93"/>
+      <mx:Label x="56" y="17" text="请选择目标数据库" fontWeight="bold" fontSize="18"/>
+      <mx:HRule x="221" y="30" width="288"/>
+      <mx:HRule x="20" y="30" width="28"/>
+      <mx:HRule x="20" y="121" width="489"/>
+      <mx:VRule x="20" y="30" height="93"/>
+      <mx:VRule x="507" y="30" height="93"/>
+      <mx:Label x="81" y="63" text="数据库名：" fontSize="17"/>
+      <mx:ComboBox x="184" y="65" id="Dbcomb" close="ChooseDbName(event)"></mx:ComboBox>
+      <mx:Text id="UserName" text="{parentApplication.uName.text}" visible="false"  x="10" y="284"/>	
+</mx:TitleWindow>

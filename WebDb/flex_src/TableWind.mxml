@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow title="新建数据表" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="800" height="500" 
+	creationComplete="init();" showCloseButton="true" close="cancel()" fontSize="13">
+    <mx:Script> 
+
+        <![CDATA[
+        	 import mx.controls.Alert; 
+             import mx.managers.PopUpManager;    
+        
+             import mx.events.PropertyChangeEvent;
+             import mx.events.CollectionEventKind;
+             import mx.events.CollectionEvent;
+
+             import mx.collections.ArrayCollection; 
+             import com.adobe.serialization.json.JSON;
+             public var DataJson:ArrayCollection=new ArrayCollection;
+            
+             //CurNode存储M由MultiDB_TO_XML传来的当前节点信息  她将将传递给子窗口
+             public var CurNode:String=new String;
+             //用于传递数据列到子窗口
+             public var dataString:String=new String;
+        	
+            [Bindable]
+			public var cities: Array = ("TEXT,INT,FLOAT,DOUBLE,CHAR,VARCHAR(20),BOOLEAN,BIT,TINYINT,SMALLINT,MEDIUMINT,INTEGER,BIGINT,DOUBLE PRECISION,DECIMAL,"+
+			"DATE,DATETIME,TIMESTAMP,TIME,YEAR,BINARY,VARBINARY,TINYBLOB,TINYTEXT,BLOB,MEDIUMBLOB,MEDIUMTEXT,LONGBLOB,LONGTEXT,ENUM,SET").split(",");
+            
+            private var ColArray:ArrayCollection=new ArrayCollection();
+            
+            //该数组用来存储表格中有数据的行
+            private var StoreArray:ArrayCollection=new ArrayCollection();
+           
+            private function init():void
+            {
+                ColArray.removeAll();
+				for (var i:int=0; i < 50; i++)
+				{
+					
+					var obj:Object=new Object();
+					//obj.label="";
+					//obj.type="";
+					obj.label=null;
+					obj.type=null;
+					obj.NNull="false";
+					obj.Pri="false";
+					ColArray.addItem(obj);
+				}
+			}	
+			//点击确定时执行的函数
+			 private function confirm():void
+			 {
+				    
+			      //得到有数据的行数 以及将有数据的行存贮在数组StoreArray中
+			       var DataRow:int=ArrayStore();
+			     
+			       Handle(DataRow);
+			       
+			       var tnw:TableName_Wind=new TableName_Wind();
+			       tnw.PareArray=DataJson;
+			       tnw.NodeCurrent=CurNode;
+			       
+                   tnw.addEventListener("myEvent2",myEventHandler2);
+                   PopUpManager.addPopUp(tnw,this,true);
+                   PopUpManager.centerPopUp(tnw);
+			  }
+			  
+			  //取消
+			   private function cancel():void
+               {
+             	  PopUpManager.removePopUp(this);
+               } 
+			  
+			
+			  
+			 private function myEventHandler2(event:Event):void
+              {
+                   dispatchEvent(new Event("myEvent"));  			       
+			       PopUpManager.removePopUp(this);
+              }
+            
+             //得到有数据的行数 以及将有数据的行存贮在数组StoreArray中
+              private function ArrayStore():int
+              {
+              
+              	 var RowCount:int;
+              	 for(var i:int=0;i<ColArray.length;i++)
+           	     {
+           	  	      if(ColArray[i].label!=""&&ColArray[i].label!=null&&ColArray[i].label!=" ")
+           	            {
+           	               RowCount++;
+           	               var obj:Object=new Object(); 
+           	               obj.label=ColArray[i].label; 
+                           obj.type=ColArray[i].type; 
+                           obj.NNull=ColArray[i].NNull; 
+                           obj.Pri=ColArray[i].Pri;
+                           StoreArray.addItem(obj);
+           	             }
+           	     }
+           	     
+           	     return RowCount;
+              }
+            
+             private function Handle(RowNum:int):void
+             {
+             	 
+                 var updatedObj:Object;
+                 var i:int;
+                 for(i=0;i<RowNum;i++)
+                 {
+                    updatedObj = new Object;
+                    updatedObj.label = StoreArray[i].label;
+                    updatedObj.type =StoreArray[i].type;
+                    updatedObj.NNull =StoreArray[i].NNull;
+                    updatedObj.Pri =StoreArray[i].Pri;
+                    DataJson.addItem(updatedObj);
+                 }
+               
+                 dataString = JSON.encode(DataJson.toArray());
+                 // mx.controls.Alert.show(dataString);
+                
+             }
+    
+	   
+        ]]> 
+
+    </mx:Script> 
+
+  
+
+
+    <mx:DataGrid id="dgTest" editable="true" x="10" y="10" width="100%" height="80%" dataProvider="{ColArray}" fontSize="13" fontWeight="bold" textAlign="center"  borderColor="#C0C8CC"  borderStyle="inset" > 
+
+        <mx:columns> 
+
+            <mx:DataGridColumn headerText="列名" width="300" dataField="label" sortable="false"/> 
+
+            <mx:DataGridColumn headerText="列类型" dataField="type"  editorDataField="value" sortable="false">
+            
+				<mx:itemEditor>
+					<mx:Component>
+						<mx:HBox>
+							<mx:Script>
+								<![CDATA[
+									import mx.utils.ArrayUtil;
+									
+									public function get value(): Object
+									{
+										//由于HBox不能够直接返回value，需要写一个value的getter函数
+										return citiesComboBox.selectedItem;
+									}
+									
+									override public function set data(value:Object) : void
+									{
+										//必须要给data复制，否则会导致程序崩溃
+										super.data = value;
+										//给combobox赋初始值
+										citiesComboBox.selectedItem = value.type;
+									} 
+								]]>
+							</mx:Script>
+						<mx:ComboBox id="citiesComboBox" dataProvider="{ArrayUtil.toArray(outerDocument.cities)}" width="100%"/> 
+						   
+						</mx:HBox>
+					</mx:Component>
+				</mx:itemEditor>
+			</mx:DataGridColumn>
+			
+			<mx:DataGridColumn headerText="设为非空" width="80" dataField="NNull" editorDataField="value" rendererIsEditor="true">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Box horizontalAlign="center">
+							<mx:Script>
+								<![CDATA[
+									public function get value(): Object
+									{
+										return cbMarried.selected ? "true" : "false";									
+									}
+									
+									override public function set data(value:Object) : void
+									{
+										super.data = value;
+										cbMarried.selected = value.NNull == "true";	
+																
+									}
+								]]>
+							</mx:Script>
+							<mx:CheckBox id="cbMarried"/>
+						</mx:Box>		
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			
+			<mx:DataGridColumn headerText="设为主键" width="80" dataField="Pri" editorDataField="value" rendererIsEditor="true">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Box horizontalAlign="center">
+							<mx:Script>
+								<![CDATA[
+									public function get value(): Object
+									{
+										return PriKey.selected ? "true" : "false";									
+									}
+									
+									override public function set data(value:Object) : void
+									{
+										super.data = value;
+										PriKey.selected = value.Pri == "true";									
+									}
+								]]>
+							</mx:Script>
+							<mx:CheckBox id="PriKey"/>
+						</mx:Box>		
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+            
+        </mx:columns> 
+
+    </mx:DataGrid>
+    <mx:Button x="609" y="397" label="取消" width="77" height="39" fontSize="20" click="cancel()"/>
+    <mx:Button x="498" y="397" label="确定" width="77" height="39" fontSize="20" click="confirm()"/>
+
+</mx:TitleWindow>

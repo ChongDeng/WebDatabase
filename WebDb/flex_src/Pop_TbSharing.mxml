@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <mx:TitleWindow title="用户数据表" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="800" height="500" 
+	creationComplete="init();" showCloseButton="true" close="cancel()" fontSize="13">
+	
+	
+	 <mx:Script source="PopSharing.as"/>
+   	 
+   	 <mx:Style>
+		Application{
+			font-size:12px;
+		}
+	</mx:Style>
+	
+	 <mx:RemoteObject id="ud" destination="UserDao" fault="onFault(event)">
+	       <mx:method name="getAllUser" result="onResult(event)"/>
+	       <mx:method name="getColName" result="ColResult(event)"/>
+	</mx:RemoteObject>
+	
+	 <mx:RemoteObject id="SendUpDate" destination="ww" fault="SaveFault(event)" result="UpDateSuccess(event)" >
+	 </mx:RemoteObject>
+	
+	 <mx:Button  id="SaveData" x="547" y="384" label="保存" click="SaveSend()" fontSize="20"/>
+	 <mx:Button id="CancelTable" x="664" y="384" label="取消" click="cancel()" fontSize="20"/>
+
+</mx:TitleWindow>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
+ <mx:Script>
+ 	<![CDATA[
+ 		         public function test():void{
+      	           	       var Stri:String="user$db$tb";	
+      	           	       var i:int= Stri.lastIndexOf("$");      	           	     
+      	           	       var Res:String=Stri.substring(i+1,Stri.length);
+      	           	       mx.controls.Alert.show(Res);	      	 
+ 			            } 
+ 	]]>
+ </mx:Script>	
+ <mx:Button x="190" y="123" label="Button" click="test()"/>
+</mx:Application>

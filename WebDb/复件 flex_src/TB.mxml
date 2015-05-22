@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" width="762" height="416">
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.events.FaultEvent;
+		    import mx.rpc.events.ResultEvent;
+		    import mx.controls.Alert;
+		    
+		    private function CreateDbase():void{
+	            	RemoteItem.CreateDb.send();
+		     }
+		
+		   private function DeleteDbase():void{
+	          	RemoteItem.DeleteDb.send();
+	      }
+		
+		private function CreateDbSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功建立数据库");
+		}
+		
+		private function DeleteDbSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功删除数据库");
+		}
+		public function DefaultFault(event:FaultEvent):void {      
+         mx.controls.Alert.show(event.fault.faultString, "Error");               
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:RemoteObject id="RemoteItem" destination="Item" fault="DefaultFault(event)">
+	  <mx:method name="CreateDb" result="CreateDbSuccess(event)"/>
+	  <mx:method name="DeleteDb" result="DeleteDbSuccess(event)"/>
+	  
+	 
+  
+   
+</mx:RemoteObject>
+	
+	<mx:Button x="50.5" y="114" label="创建数据库" click="CreateDbase()"/>
+	<mx:Button x="160.5" y="114" label="删除数据库" click="DeleteDbase()"/>
+	<mx:Button x="50" y="173" label="新建数据表"/>
+	<mx:Button x="160.5" y="173" label="删除数据表"/>
+</mx:Application>

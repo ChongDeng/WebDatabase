@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="remoting-service" 
+    class="flex.messaging.services.RemotingService">
+
+    <adapters>
+        <adapter-definition id="java-object" class="flex.messaging.services.remoting.adapters.JavaAdapter" default="true"/>
+    </adapters>
+
+    <default-channels>
+        <channel ref="my-amf"/>
+    </default-channels>
+
+    <destination id="Proc">
+			        <properties>
+			            <source>com.dc.Process</source>
+			            <scope>application</scope>
+			        </properties>
+             </destination> 
+ 
+    
+     
+     <destination id="DB">
+			        <properties>
+			            <source>com.dc.Dbj</source>
+			            <scope>application</scope>
+			        </properties>
+             </destination> 
+             
+     <destination id="ww">
+			        <properties>
+			            <source>com.dc.Operate</source>
+			            <scope>application</scope>
+			        </properties>
+    </destination> 
+
+     
+    
+    <destination id="UserDao">   
+        <properties>   
+          <source>org.rjb.UserDao</source>   
+        </properties>   
+     </destination> 
+
+
+
+    <destination id="ProExcel">   
+        <properties>   
+          <source>Excel.ExcelOperate</source> 
+          <scope>application</scope>  
+        </properties>   
+     </destination> 
+     
+     <destination id="ExcelToTable">   
+        <properties>   
+          <source>Excel.ExcelToTable</source> 
+          <scope>application</scope>  
+        </properties>   
+     </destination>
+ 
+     <destination id="WriteToExcel">   
+        <properties>   
+          <source>Excel.TableToExcel</source> 
+          <scope>application</scope>  
+        </properties>   
+     </destination>
+     
+     <destination id="Export">   
+        <properties>   
+          <source>Export.DBTB_Export</source> 
+          <scope>application</scope>  
+        </properties>   
+     </destination>
+     
+      <destination id="ReadFromText">   
+	        <properties>   
+	          <source>Txt.TextToTable</source> 
+	          <scope>application</scope>  
+	        </properties>   
+	  </destination>
+	  
+	   <destination id="AccessToDb">   
+	        <properties>   
+	          <source>Access.ToDB</source> 
+	          <scope>application</scope>  
+	        </properties>   
+	  </destination>
+	  
+	  <destination id="sqlImport">   
+	        <properties>   
+	          <source>sql.Import</source> 
+	          <scope>application</scope>  
+	        </properties>   
+	  </destination>
+	  
+	  <destination id="sqlExport">   
+	        <properties>   
+	          <source>sql.Export</source> 
+	          <scope>application</scope>  
+	        </properties>   
+	  </destination>
+	  
+     
+     
+
+</service>

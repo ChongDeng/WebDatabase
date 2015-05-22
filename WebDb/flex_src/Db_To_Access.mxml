@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" layout="absolute" width="580" height="356"  fontSize="12" borderColor="#E2E2E2" fontWeight="bold" title="导出—Accesss数据库">
+	<mx:states>
+		<mx:State name="Step2">
+			<mx:RemoveChild target="{button1}"/>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:HRule x="19" y="133" width="24"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:HRule x="19" y="233" width="528"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:HRule x="195" y="133" width="352"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:VRule x="19" y="133"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:VRule x="545" y="133"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:Label x="49" y="120" text="请选择保存路径" fontSize="18"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:Button x="330" y="166" label="浏览…" height="33" fontSize="18" click="saveFileTo()"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:Label x="87" y="172" text="请选择目标文件的保存路径:" fontSize="16"/>
+			</mx:AddChild>
+			<mx:RemoveChild target="{hrule1}"/>
+			<mx:RemoveChild target="{vrule2}"/>
+			<mx:RemoveChild target="{Dbcomb}"/>
+			<mx:RemoveChild target="{label2}"/>
+			<mx:RemoveChild target="{label1}"/>
+			<mx:RemoveChild target="{hrule2}"/>
+			<mx:RemoveChild target="{hrule3}"/>
+			<mx:RemoveChild target="{vrule1}"/>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:Label x="51" y="11" text="已选择的源数据库" fontWeight="bold" fontSize="18" id="label0"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:HRule x="243" y="23" width="305" id="hrule0"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:HRule x="22" y="21" width="24" id="hrule4"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:HRule x="22" y="93" width="528" id="hrule5"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:VRule x="22" y="21" height="74" id="vrule0"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:VRule x="547" y="23" height="72" id="vrule3"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:Label x="101" y="46" text="您选择了数据库:" fontSize="18" fontWeight="bold" id="label3"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{canvas3}" position="lastChild">
+				<mx:Label x="257" y="46" text="{DbForSent}" fontSize="17"/>
+			</mx:AddChild>
+			<mx:SetProperty target="{UserName}" name="y" value="284"/>
+			<mx:SetProperty target="{UserName}" name="x" value="10"/>
+			<mx:AddChild relativeTo="{UserName}" position="before">
+				<mx:Button x="466" y="274" label="上一步" fontWeight="bold" fontSize="20" click="this.currentState=''"/>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	<mx:Script>
+		<![CDATA[
+			       import mx.rpc.events.FaultEvent;
+				   import mx.rpc.events.ResultEvent;								 
+				   import mx.collections.ArrayCollection;	            
+	               import mx.managers.PopUpManager;	               
+				   public var Path:String;
+				   public var fileViewWindow:FileReference = new FileReference();	     
+			        
+			        //DbArray存放用户已经创建过的数据库名，用于用户选择导出哪个数据库的数据表
+				 private var DbArray:ArrayCollection=new ArrayCollection;
+				 //DbForSent保存用户选择的数据库，这将发送到后台
+				 private var DbForSent:String;
+				 //DbPrevious保存用户上一次选择的数据库，这个用来和下一次选择的数据库进行比较，如果相同就不用与后台通信
+				 private var DbPrevious:String;
+				 
+				 private function init( ):void{
+	             	getName.getDbName.send();
+	             }
+	             
+	              private function close( ):void
+				  {
+		 			PopUpManager.removePopUp(this);
+				  }
+				  
+	              //成功读取数据库名
+		         private function SucDbName(event:ResultEvent):void
+			      {
+					 DbArray=ArrayCollection(event.result);				
+					 Dbcomb.dataProvider=DbArray;	
+					 DbPrevious=DbArray[0].label;  //DbPrevious保存用户上一次选择的数据库，这个用来和下一次选择的数据库进行比较，如果相同就不用与后台通信
+					 DbForSent=DbArray[0].label; //	DbForSent初始化为第一个数据库名
+				  }
+				    //读取数据库名失败、读取数据表名失败  
+				   private function defaultFault(event:FaultEvent):void
+			       {
+					  mx.controls.Alert.show(event.fault.faultString);  
+			       }
+			      
+			       private function SucCreate(event:ResultEvent):void
+			       {
+					 					  
+				   }	
+			       private function ChooseDbName(event:Event):void 
+		 		   {
+		 			  DbForSent=Dbcomb.selectedItem.label; 			
+		 		   }
+			      
+			       private function saveFileTo():void{                      
+                      //在服务端目录tomcat/webapps/WebDb/space下创建要保存本地的文件
+				      getName.creatTempAccess(UserName.text,DbForSent);				  
+                      var Path:String="/space/"+DbForSent+".accdb";                     				
+					  var u:String = "http://localhost:8080/WebDb/down.jsp?file="+Path;
+				      var request:URLRequest = new URLRequest(u);				    
+				      fileViewWindow.download(request);				
+				      fileViewWindow.addEventListener(Event.COMPLETE, onComplete);
+                  }   
+                  
+                   private function onComplete(event:Event):void{                    
+                    mx.controls.Alert.show("Done Success");
+                    dispatchEvent(new Event("myEvent2")); 
+					close();
+                   }               
+                     
+		]]>
+	</mx:Script>
+	
+	<mx:RemoteObject id="getName" destination="Export" fault="defaultFault(event)">
+		  <mx:method name="getDbName" result="SucDbName(event)">
+	            <mx:arguments>
+	                <name>{UserName.text}</name>
+	            </mx:arguments>
+	     </mx:method>
+	
+	     
+	     <mx:method name="creatTempAccess" result="SucCreate(event)">
+	            <mx:arguments>
+	                <arg1>{UserName.text}</arg1>
+	                <arg2>{DbForSent}</arg2>                           
+	            </mx:arguments>
+	     </mx:method>      
+    </mx:RemoteObject>
+	<mx:Canvas x="0" y="4" width="560" height="266" id="canvas3">
+		<mx:Label x="52" y="9" text="请选择源数据库" fontWeight="bold" fontSize="18" id="label1"/>
+		<mx:HRule x="230" y="21" width="299" id="hrule2"/>
+		<mx:HRule x="22" y="19" width="24" id="hrule3"/>
+		<mx:HRule x="22" y="107" width="508" id="hrule1"/>
+		<mx:VRule x="22" y="19" height="90" id="vrule1"/>
+		<mx:VRule x="528" y="21" height="88" id="vrule2"/>
+		<mx:Label x="96" y="48" text="选择相应的数据库:" fontSize="18" fontWeight="bold" id="label2"/>
+		<mx:ComboBox x="268" y="48" height="25" id="Dbcomb" close="ChooseDbName(event)"></mx:ComboBox>
+	</mx:Canvas>
+	<mx:Button x="459" y="274" label="下一步" fontWeight="bold" fontSize="20" click="this.currentState='Step2'" id="button1"/>
+	<mx:Button x="366" y="274" label="关闭" fontWeight="bold" fontSize="20" click="close()"/>
+	<mx:Text id="UserName" text="{parentApplication.uName.text}" visible="false" />	
+</mx:TitleWindow>

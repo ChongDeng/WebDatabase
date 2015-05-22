@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" layout="absolute" width="800" height="504"  fontSize="12" borderColor="#E2E2E2" fontWeight="bold" title="导出文本向导">
+	<mx:states>
+		<mx:State name="Step2">
+			<mx:RemoveChild target="{canvas3}"/>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="89" y="13" text="该向导允许您指Web DB导出数据的细节。想用哪个导出格式" fontWeight="bold" fontSize="19" id="label0"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="83" y="49" width="571" id="hrule0"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="83" y="138" width="571" id="hrule4"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="83" y="49" height="91" id="vrule0"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="652" y="49" height="91" id="vrule3"/>
+			</mx:AddChild>	
+			<mx:AddChild position="lastChild">
+				<mx:RadioButtonGroup id="radiogroup1" itemClick="handleClick(event)"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButton x="113" y="59"  label="带分隔符—用逗号或制表符之类的符号分隔每个字段" groupName="radiogroup1"  value="Divide" selected="true" width="428" height="35" fontWeight="bold" fontSize="14" id="radiobutton1"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButton x="113" y="98" label="固定宽度—字段之间使用空格使所有字段保持一定距离" groupName="radiogroup1" value="FixedWidth" width="428" height="32" fontWeight="bold" fontSize="14" id="radiobutton2"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:CheckBox x="137" y="157" label="第一行包含字段名称" fontWeight="bold" fontSize="14" id="ContainTitle" click="AddTitle()"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="10" y="182" text="导出格式示例" width="105" fontWeight="bold" fontSize="14" id="label4"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:TextArea  id="TxtArea" x="10" y="205" width="760" height="198" editable="false"/>
+			</mx:AddChild>
+			<mx:SetProperty target="{UserName}" name="x" value="10"/>
+			<mx:SetProperty target="{UserName}" name="y" value="432"/>
+			<mx:AddChild relativeTo="{UserName}" position="before">
+				<mx:Button x="571" y="415" label="上一步" fontSize="18" click="this.currentState=''" id="button0"/>
+			</mx:AddChild>
+			<mx:SetProperty target="{button2}" name="x" value="477"/>
+			<mx:RemoveChild target="{button1}"/>
+			<mx:AddChild position="lastChild">
+				<mx:Button x="675" y="415" label="下一步" fontSize="18" click="NextWich()" id="button4"/>
+			</mx:AddChild>
+			
+		</mx:State>
+		<mx:State name="FixedWidth" basedOn="Step2">
+			<mx:RemoveChild target="{hrule4}"/>
+			<mx:RemoveChild target="{vrule3}"/>
+			<mx:RemoveChild target="{radiobutton2}"/>
+			<mx:RemoveChild target="{ContainTitle}"/>
+			<mx:RemoveChild target="{radiobutton1}"/>
+			<mx:RemoveChild target="{vrule0}"/>
+			<mx:RemoveChild target="{hrule0}"/>
+			<mx:RemoveChild target="{label0}"/>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="126" y="37" width="24"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="126" y="137" width="528"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="302" y="37" width="352"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="126" y="37"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="652" y="37"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="156" y="24" text="请选择保存路径" fontSize="18"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Button x="437" y="70" label="浏览…" height="33" fontSize="18" click="saveFileTo()"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="194" y="76" text="请选择目标文件的保存路径:" fontSize="16"/>
+			</mx:AddChild>
+			<mx:SetProperty target="{label4}" name="y" value="156"/>
+			<mx:SetProperty target="{TxtArea}" name="height" value="226"/>
+			<mx:SetProperty target="{TxtArea}" name="y" value="177"/>
+			<mx:RemoveChild target="{button0}"/>
+			<mx:AddChild position="lastChild">
+				<mx:Button x="563" y="415" label="上一步" fontSize="18" click="this.currentState='Step2'" id="button3"/>
+			</mx:AddChild>
+			<mx:RemoveChild target="{button4}"/>
+		</mx:State>
+		<mx:State name="Step3" basedOn="Step2">
+			<mx:RemoveChild target="{hrule4}"/>
+			<mx:RemoveChild target="{vrule3}"/>
+			<mx:RemoveChild target="{radiobutton2}"/>
+			<mx:RemoveChild target="{ContainTitle}"/>
+			<mx:RemoveChild target="{radiobutton1}"/>
+			<mx:RemoveChild target="{hrule0}"/>
+			<mx:RemoveChild target="{label0}"/>
+			<mx:RemoveChild target="{vrule0}"/>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="75" y="15" text="请选择所需的字段分隔符，并在下面窗口中查看文本效果" fontWeight="bold" fontSize="19" id="label5"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="240" y="53" width="347" id="hrule5"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="94" y="115" width="493" id="hrule6"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="94" y="53" height="64" id="vrule4"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="553" y="53" height="64" id="vrule5" width="70"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="119" y="44" text="请选择字段分隔符" fontWeight="bold" fontSize="13" id="label6"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="94" y="53" width="20" id="hrule7"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:CheckBox x="96" y="131" id="ChkBox" click="AddTextContent()" label="第一行包含字段名称" fontWeight="bold" fontSize="14"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButtonGroup id="radiogroup2" itemClick="DivideHandle(event)"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButton x="119" y="71" value="Tab" label="制表符" groupName="radiogroup2" fontWeight="bold" fontSize="14" id="radiobutton3"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButton x="211" y="71" value="Fenhao" label="分号" groupName="radiogroup2" fontWeight="bold" fontSize="14" id="radiobutton4"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButton x="285" y="71" value="Douhao" label="逗号" groupName="radiogroup2" fontWeight="bold" fontSize="14" id="radiobutton5"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButton x="362" y="71" value="Spacer" label="空格" groupName="radiogroup2" fontWeight="bold" fontSize="14" id="radiobutton6"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:RadioButton x="444" y="71" value="Other" label="其他" groupName="radiogroup2" fontWeight="bold" fontSize="14" id="radiobutton7"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:TextInput id="InputChar" maxChars="1" x="499" y="72" width="30" height="26"/>
+			</mx:AddChild>
+			<mx:RemoveChild target="{button0}"/>
+			<mx:RemoveChild target="{button4}"/>
+			<mx:AddChild position="lastChild">
+				<mx:Button x="569" y="415" label="上一步" fontSize="18" click="this.currentState='Step2'" id="button5"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Button x="678" y="415" label="下一步" fontSize="18" click="this.currentState='Step4'" id="button6"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="Step4" basedOn="Step3">
+			<mx:RemoveChild target="{ChkBox}"/>
+			<mx:RemoveChild target="{hrule6}"/>
+			<mx:RemoveChild target="{vrule5}"/>
+			<mx:RemoveChild target="{vrule4}"/>
+			<mx:RemoveChild target="{radiobutton3}"/>
+			<mx:RemoveChild target="{radiobutton4}"/>
+			<mx:RemoveChild target="{radiobutton5}"/>
+			<mx:RemoveChild target="{radiobutton6}"/>
+			<mx:RemoveChild target="{radiobutton7}"/>
+			<mx:RemoveChild target="{InputChar}"/>
+			<mx:RemoveChild target="{label6}"/>
+			<mx:RemoveChild target="{hrule5}"/>
+			<mx:RemoveChild target="{hrule7}"/>
+			<mx:RemoveChild target="{label5}"/>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="126" y="37" width="24"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="126" y="137" width="528"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:HRule x="302" y="37" width="352"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="126" y="37"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:VRule x="652" y="37"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="156" y="24" text="请选择保存路径" fontSize="18"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Button x="437" y="70" label="浏览…" height="33" fontSize="18" click="saveFileTo()"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="194" y="76" text="请选择目标文件的保存路径:" fontSize="16"/>
+			</mx:AddChild>
+			<mx:RemoveChild target="{button5}"/>
+			<mx:RemoveChild target="{button6}"/>
+			<mx:AddChild position="lastChild">
+				<mx:Button x="565" y="415" label="上一步" fontSize="18" click="this.currentState='Step3'" id="button7"/>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	<mx:Script>
+		<![CDATA[
+			       import mx.rpc.events.FaultEvent;
+				   import mx.rpc.events.ResultEvent;
+				   import mx.controls.Alert;				 
+				   import mx.collections.ArrayCollection;	            
+	               import mx.managers.PopUpManager;
+	               import mx.events.ItemClickEvent;  
+				   public var filePath:String;
+				   public var myFileReference:FileReference = new FileReference();  
+			       
+			     //DbArray存放用户已经创建过的数据库名，用于用户选择导出哪个数据库的数据表
+				 private var DbArray:ArrayCollection=new ArrayCollection;
+				 //DbForSent保存用户选择的数据库，这将发送到后台
+				 private var DbForSent:String;
+				 //DbPrevious保存用户上一次选择的数据库，这个用来和下一次选择的数据库进行比较，如果相同就不用与后台通信
+				 private var DbPrevious:String;
+				 
+				 //TbArray存放用户已经创建过的某个数据库中的全部数据表名，用于用户选择导出数据库的哪个数据表
+				 private var TbArray:ArrayCollection=new ArrayCollection;
+				 //TbForSent保存用户选择的要导出数据的数据表，这将发送到后台
+				 private var TbForSent:String;
+				 //TbPrevious保存用户上一次选择的数据库，这个用来和下一次选择的数据库进行比较，如果相同就不用与后台通信
+				 private var TbPrevious:String;
+			     			     
+			     //DivStr用于存储“分隔符”或者“固定宽度”的内容,其值初始化为","
+			     private var DivStr:String="','";
+			     //TextAreaStr用于显示在文本框
+			     private var TextAreaStr:String;
+			     
+			     //Msg_Sended被发送到后台，创建Txt文件
+			     private var Msg_Sended:String;
+			    
+			     private var arDatas:ArrayCollection=new ArrayCollection();
+				 private var ColArray:ArrayCollection=new ArrayCollection();
+	             private var arr:Array=new Array;
+	             private var ColNum:int;
+	             
+	             private var Path:String;
+				 private var fileViewWindow:FileReference = new FileReference();
+			    
+			     private function init( ):void{
+	             	getName.getDbName.send();
+	             }
+	                    
+			    private function close( ):void
+				{
+		 			PopUpManager.removePopUp(this);
+				}
+			
+			    private function ChooseDbName(event:Event):void 
+		 		 {
+		 			DbForSent=Dbcomb.selectedItem.label;
+		 			if(DbPrevious!=DbForSent)
+		 			{
+		 				DbPrevious=DbForSent;
+		 				getName.getTbName(UserName.text,DbForSent);	
+		 			}
+		 			  				 					 			
+		 		 }
+		 	
+		 	    private function ChooseTbName(event:Event):void 
+		 		{
+		 			TbForSent=Tbcomb.selectedItem.label;		 							 					 			
+		 		}		 		
+		 		
+				private function ToStep2():void{
+				  this.currentState='Step2';
+				  var UserDbTb:String=UserName.text+"$"+DbForSent+"$"+TbForSent;	
+				  ReadRow.getAllUser.send(UserDbTb);//读取表格的内容，并显示到前台					  			 
+		        }	        	
+		        
+	             
+	             //成功读取数据库名
+		         private function SucDbName(event:ResultEvent):void
+			      {
+					 DbArray=ArrayCollection(event.result);				
+					 Dbcomb.dataProvider=DbArray;	
+					 DbPrevious=DbArray[0].label;  //DbPrevious保存用户上一次选择的数据库，这个用来和下一次选择的数据库进行比较，如果相同就不用与后台通信
+					 DbForSent=DbArray[0].label; //	DbForSent初始化为第一个数据库名						 					 
+					 getName.getTbName(UserName.text,DbForSent);		 
+				  }
+				  //成功读取数据表名
+		          private function SucTbName(event:ResultEvent):void
+			      {
+					 TbArray=ArrayCollection(event.result);				
+					 Tbcomb.dataProvider=TbArray;	
+					 TbForSent=TbArray[0].label; //	DbForSent初始化为第一个数据库名	
+					 TbPrevious=TbArray[0].label;  //TbPrevious保存用户上一次选择的数据表，这个用来和下一次选择的数据表进行比较，如果相同就不用与后台通信										  
+				  }
+				  
+				    private function SucReadRow(event:ResultEvent):void
+			        {
+					   arDatas=ArrayCollection(event.result); 					  
+					   var UserDbTb:String=UserName.text+"$"+DbForSent+"$"+TbForSent;
+					   ReadColName.getColName.send(UserDbTb);  					 
+				    }
+				    private function SucColName(event:ResultEvent):void
+			        {
+					    ColArray=ArrayCollection(event.result); 
+      	                arr=ColArray.toArray();
+      	                ColNum=arr.length;      	              
+					    AddRowData(ColNum);	 //默认显示表的数据，不显示表的列名		     
+				   }
+				  
+				   //读取数据库名失败、读取数据表名失败  
+				   private function defaultFault(event:FaultEvent):void
+			       {
+					  mx.controls.Alert.show(event.fault.faultString);  
+			       }
+			      
+			       private function SucCreate(event:ResultEvent):void
+			       {
+					 					  
+				   }			  
+				  		
+				   //定义RadioButtonGroup的itemClick事件
+                   private function handleClick(event:ItemClickEvent):void {                   
+                     if (event.currentTarget.selectedValue =="FixedWidth")
+                        DivStr="'          '"; 
+                     else
+                	    DivStr="','";                   				
+			        AddTitle( );		                               
+ 		           } 
+ 		  
+ 		           private function AddTitle( ):void
+			       {			
+						if(ContainTitle.selected)
+						{			 	 
+						    AddRowData(ColNum);						   
+							AddColName(ColNum);																 
+						}
+						else
+						{   									
+						    AddRowData(ColNum);
+						}									 
+				   }
+				 
+				 
+				    private function AddColName(num:int):void
+				   {
+					   TextAreaStr="";	
+					   var str:String="";
+					   switch(num)
+			   	          {
+			   	          	
+			   	          	case 1:	   	          	        
+			   	          	        var val1:String=arr[0];
+			   	          	        TextAreaStr+="'"+val1+"'"+"\n";	  //字符串"Replace_Flag"将在创建TXT时，转换为换行符"\n"	,之所以不直接发送"\n"到后台，是因为后台探测不到"\n"	   	          	       
+			   	          	        str+="'"+val1+"'"+"Replace_Flg";			   	          	       
+			   	          	        break;
+			   	          	case 2:
+			   	          	        var val1:String=arr[0];
+			   	          	        var val2:String=arr[1];			   	          	   			   	          	        
+			   	          	        TextAreaStr+="'"+val1+DivStr+val2+"'"+"\n";
+			   	          	        str+="'"+val1+DivStr+val2+"'"+"Replace_Flg";		
+			   	          	        break;
+			   	            case 3:
+			   	          	        var val1:String=arr[0];
+			   	          	        var val2:String=arr[1];	
+			   	          	        var val3:String=arr[2];			   	          	   			   	          	        
+			   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+"'"+"\n";
+			   	          	        str+="'"+val1+DivStr+val2+DivStr+val3+"'"+"Replace_Flg";		
+			   	          	        break;
+			   	            case 4:
+			   	          	        var val1:String=arr[0];
+			   	          	        var val2:String=arr[1];	
+			   	          	        var val3:String=arr[2];	
+			   	          	        var val4:String=arr[3];			   	          	   			   	          	        
+			   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+"'"+"\n";
+			   	          	        str+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+"'"+"Replace_Flg";		
+			   	          	        break;    	       
+			   	            case 5:
+			   	          	        var val1:String=arr[0];
+			   	          	        var val2:String=arr[1];	
+			   	          	        var val3:String=arr[2];	
+			   	          	        var val4:String=arr[3];	
+			   	          	        var val5:String=arr[4];			   	          	   			   	          	        
+			   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+"'"+"\n";	
+			   	          	        str+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+"'"+"Replace_Flg";		
+			   	          	        break;    	       
+			   	            case 6:
+			   	          	        var val1:String=arr[0];
+			   	          	        var val2:String=arr[1];	
+			   	          	        var val3:String=arr[2];	
+			   	          	        var val4:String=arr[3];	
+			   	          	        var val5:String=arr[4];		
+			   	          	        var val6:String=arr[5];			   	          	   			   	          	        
+			   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+"'"+"\n";		
+			   	          	        str+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+"'"+"Replace_Flg";		
+			   	          	        break;    	   
+			   	          	 case 7:
+			   	          	        var val1:String=arr[0];
+			   	          	        var val2:String=arr[1];	
+			   	          	        var val3:String=arr[2];	
+			   	          	        var val4:String=arr[3];	
+			   	          	        var val5:String=arr[4];		
+			   	          	        var val6:String=arr[5];
+			   	          	        var val7:String=arr[6];			   	          	   			   	          	        
+			   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+"'"+"\n";		
+			   	          	        str+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+"'"+"Replace_Flg";		
+			   	          	        break;  
+			   	          	 case 8:
+			   	          	        var val1:String=arr[0];
+			   	          	        var val2:String=arr[1];	
+			   	          	        var val3:String=arr[2];	
+			   	          	        var val4:String=arr[3];	
+			   	          	        var val5:String=arr[4];		
+			   	          	        var val6:String=arr[5];
+			   	          	        var val7:String=arr[6];			
+			   	          	        var val8:String=arr[7];		   	          	   			   	          	        
+			   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+"'"+"\n";	
+			   	          	        str+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+"'"+"Replace_Flg";		
+			   	          	        break;  
+			   	          	  case 9:
+			   	          	        var val1:String=arr[0];
+			   	          	        var val2:String=arr[1];	
+			   	          	        var val3:String=arr[2];	
+			   	          	        var val4:String=arr[3];	
+			   	          	        var val5:String=arr[4];		
+			   	          	        var val6:String=arr[5];
+			   	          	        var val7:String=arr[6];			
+			   	          	        var val8:String=arr[7];		
+			   	          	        var val9:String=arr[8];	   	          	   			   	          	        
+			   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+DivStr+val9+"'"+"\n";		
+			   	          	        str+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+DivStr+val9+"'"+"Replace_Flg";		
+			   	          	        break;     
+			   	          	  case 10:
+			   	          	        var val1:String=arr[0];
+			   	          	        var val2:String=arr[1];	
+			   	          	        var val3:String=arr[2];	
+			   	          	        var val4:String=arr[3];	
+			   	          	        var val5:String=arr[4];		
+			   	          	        var val6:String=arr[5];
+			   	          	        var val7:String=arr[6];			
+			   	          	        var val8:String=arr[7];		
+			   	          	        var val9:String=arr[8];	 
+			   	          	        var val10:String=arr[9];	   	          	   			   	          	        
+			   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+DivStr+val9+DivStr+val10+"'"+"\n";		
+			   	          	        str="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+DivStr+val9+DivStr+val10+"'"+"Replace_Flg";		
+			   	          	        break; 	   	   
+			   	           }
+			   	           Msg_Sended=str+Msg_Sended;
+			   	          TxtArea.text=TextAreaStr+TxtArea.text;	 
+		 		     } 	
+		 		     
+				    private function AddRowData(num:int):void
+				   {
+					  TextAreaStr="";	
+					  Msg_Sended="";
+					  for(var RowNum:int=0; RowNum<arDatas.length;RowNum++)					
+						    switch(num)
+				   	          {
+				   	          	case 1:	   	          	        
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        TextAreaStr+="'"+val1+"'"+"\n";	
+				   	          	        Msg_Sended+="'"+val1+"'"+"Replace_Flag";	//字符串"Replace_Flag"将在创建TXT时，转换为换行符"\n"	,之所以不直接发送"\n"到后台，是因为后台探测不到"\n"	   	          	       
+				   	          	        break;
+				   	          	case 2:
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        var val2:String=arDatas[RowNum].key2;			   	          	   			   	          	        
+				   	          	        TextAreaStr+="'"+val1+DivStr+val2+"'"+"\n";	
+				   	          	        Msg_Sended+="'"+val1+DivStr+val2+"'"+"Replace_Flg";						   	          	       
+				   	          	        break;
+				   	            case 3:
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        var val2:String=arDatas[RowNum].key2;
+				   	          	        var val3:String=arDatas[RowNum].key3;			   	          	   			   	          	        
+				   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+"'"+"\n";	
+				   	          	        Msg_Sended+="'"+val1+DivStr+val2+DivStr+val3+"'"+"Replace_Flg";		
+				   	          	        break;
+				   	            case 4:
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        var val2:String=arDatas[RowNum].key2;
+				   	          	        var val3:String=arDatas[RowNum].key3;
+				   	          	        var val4:String=arDatas[RowNum].key4;			   	          	   			   	          	        
+				   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+"'"+"\n";	
+				   	          	        Msg_Sended+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+"'"+"Replace_Flg";		
+				   	          	        break;    	       
+				   	            case 5:
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        var val2:String=arDatas[RowNum].key2;
+				   	          	        var val3:String=arDatas[RowNum].key3;
+				   	          	        var val4:String=arDatas[RowNum].key4;
+				   	          	        var val5:String=arDatas[RowNum].key5;			   	          	   			   	          	        
+				   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+"'"+"\n";
+				   	          	        Msg_Sended+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+"'"+"Replace_Flg";				
+				   	          	        break;    	       
+				   	            case 6:
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        var val2:String=arDatas[RowNum].key2;
+				   	          	        var val3:String=arDatas[RowNum].key3;
+				   	          	        var val4:String=arDatas[RowNum].key4;
+				   	          	        var val5:String=arDatas[RowNum].key5;	
+				   	          	        var val6:String=arDatas[RowNum].key6;			   	          	   			   	          	        
+				   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+"'"+"\n";
+				   	          	        Msg_Sended+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+"'"+"Replace_Flg";				   	          	        
+				   	          	        break;    	   
+				   	          	 case 7:
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        var val2:String=arDatas[RowNum].key2;
+				   	          	        var val3:String=arDatas[RowNum].key3;
+				   	          	        var val4:String=arDatas[RowNum].key4;
+				   	          	        var val5:String=arDatas[RowNum].key5;	
+				   	          	        var val6:String=arDatas[RowNum].key6;
+				   	          	        var val7:String=arDatas[RowNum].key7;			   	          	   			   	          	        
+				   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+"'"+"\n";
+				   	          	        Msg_Sended+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+"'"+"Replace_Flg";		
+				   	          	        break;  
+				   	          	 case 8:
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        var val2:String=arDatas[RowNum].key2;
+				   	          	        var val3:String=arDatas[RowNum].key3;
+				   	          	        var val4:String=arDatas[RowNum].key4;
+				   	          	        var val5:String=arDatas[RowNum].key5;	
+				   	          	        var val6:String=arDatas[RowNum].key6;
+				   	          	        var val7:String=arDatas[RowNum].key7;	
+				   	          	        var val8:String=arDatas[RowNum].key8;		   	          	   			   	          	        
+				   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+"'"+"\n";	
+				   	          	        Msg_Sended+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+"'"+"Replace_Flg";		
+				   	          	        break;  
+				   	          	  case 9:
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        var val2:String=arDatas[RowNum].key2;
+				   	          	        var val3:String=arDatas[RowNum].key3;
+				   	          	        var val4:String=arDatas[RowNum].key4;
+				   	          	        var val5:String=arDatas[RowNum].key5;	
+				   	          	        var val6:String=arDatas[RowNum].key6;
+				   	          	        var val7:String=arDatas[RowNum].key7;	
+				   	          	        var val8:String=arDatas[RowNum].key8;	
+				   	          	        var val9:String=arDatas[RowNum].key9;	   	          	   			   	          	        
+				   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+DivStr+val9+"'"+"\n";
+				   	          	        Msg_Sended+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+DivStr+val9+"'"+"Replace_Flg";		
+				   	          	        break;     
+				   	          	  case 10:
+				   	          	        var val1:String=arDatas[RowNum].key1;
+				   	          	        var val2:String=arDatas[RowNum].key2;
+				   	          	        var val3:String=arDatas[RowNum].key3;
+				   	          	        var val4:String=arDatas[RowNum].key4;
+				   	          	        var val5:String=arDatas[RowNum].key5;	
+				   	          	        var val6:String=arDatas[RowNum].key6;
+				   	          	        var val7:String=arDatas[RowNum].key7;	
+				   	          	        var val8:String=arDatas[RowNum].key8;	
+				   	          	        var val9:String=arDatas[RowNum].key9;
+				   	          	        var val10:String=arDatas[RowNum].key10;	   	          	   			   	          	        
+				   	          	        TextAreaStr+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+DivStr+val9+DivStr+val10+"'"+"\n";		
+				   	          	        Msg_Sended+="'"+val1+DivStr+val2+DivStr+val3+DivStr+val4+DivStr+val5+DivStr+val6+DivStr+val7+DivStr+val8+DivStr+val9+DivStr+val10+"'"+"Replace_Flg";		
+				   	          	        break; 	   	   
+				   	           }				   	   
+				   	      TxtArea.text=TextAreaStr;	  
+		 		     } 	  
+		 		     
+		 		     private function NextWich():void
+		 		     {
+			 			if(radiobutton2.selected)
+			 			  this.currentState='FixedWidth';
+			 			else
+			 			  this.currentState='Step3';
+		 		     }
+		 		     
+		 		     private function saveFileTo():void{                      
+                      //在服务端目录tomcat/webapps/WebDb/space下创建要保存本地的文件				     
+				      getName.creatTempTxt(TbForSent,Msg_Sended);
+				  
+                      Path="/space/"+TbForSent+".txt";                     				
+					  var u:String = "http://localhost:8080/WebDb/down.jsp?file="+Path;
+				      var request:URLRequest = new URLRequest(u);				    
+				      fileViewWindow.download(request);				
+				      fileViewWindow.addEventListener(Event.COMPLETE, onComplete);
+                 }   
+                 
+                 private function onComplete(event:Event):void{                    
+                    mx.controls.Alert.show("Done Success");
+                    dispatchEvent(new Event("myEvent2")); 
+					close();
+                 }
+                 
+                 				//定义RadioButtonGroup2的itemClick事件
+		        private function DivideHandle(event:ItemClickEvent):void 
+		        {   
+		               
+		                InputChar.removeEventListener(Event.CHANGE,onChange);
+		                if (event.currentTarget.selectedValue =="Tab")
+		                 {   
+		                    DivStr="'	'";AddTextContent( ); 
+		                 }
+		                if (event.currentTarget.selectedValue =="Fenhao")
+		                 {   
+		                    DivStr="';'";AddTextContent( ); 
+		                 }
+		                 if (event.currentTarget.selectedValue =="Douhao")
+		                 {   
+		                    DivStr="','";AddTextContent( ); 
+		                 }
+		                  if (event.currentTarget.selectedValue =="Spacer")
+		                 {   
+		                    DivStr="' '";AddTextContent( ); 
+		                 }
+		                  if (event.currentTarget.selectedValue =="Other")
+		                 {  
+		                    InputChar.addEventListener(Event.CHANGE,onChange);                   
+		                 }            
+		 		 }    
+		 		 
+		 		  private function onChange(event:Event):void 
+		 		  {   
+		 	 	    DivStr="'"+InputChar.text+"'";AddTextContent( ); 
+		 	      }
+		 	      
+		 	      private function  AddTextContent( ):void
+			      {			
+						if(ChkBox.selected)
+						{			 	 
+						    AddRowData(ColNum);						   
+							AddColName(ColNum);																 
+						}
+						else
+						{   									
+						    AddRowData(ColNum);
+						}									 
+				  }	  
+		 		  
+ 		  
+		]]>
+	</mx:Script>
+
+
+    <mx:RemoteObject id="getName" destination="Export" fault="defaultFault(event)">
+		  <mx:method name="getDbName" result="SucDbName(event)">
+	            <mx:arguments>
+	                <name>{UserName.text}</name>
+	            </mx:arguments>
+	     </mx:method>
+	     
+	     <mx:method name="getTbName" result="SucTbName(event)">
+	            <mx:arguments>
+	                <arg1>{UserName.text}</arg1>
+	                <arg2>{DbForSent}</arg2>
+	            </mx:arguments>
+	     </mx:method> 
+	     
+	     <mx:method name="creatTempTxt" result="SucCreate(event)">
+	            <mx:arguments>
+	                <arg1>{TbForSent}</arg1> 
+	                <arg2>{Msg_Sended}</arg2>                
+	            </mx:arguments>
+	     </mx:method>      
+    </mx:RemoteObject>
+    
+ <mx:RemoteObject id="ReadRow" destination="UserDao" result="SucReadRow(event)" fault="defaultFault(event)"/> 
+ <mx:RemoteObject id="ReadColName" destination="UserDao" result="SucColName(event)" fault="defaultFault(event)"/>  
+
+	<mx:Canvas x="0" y="4" width="770" height="399" id="canvas3">
+		<mx:Label x="49" y="22" text="请选择导出的数据源" fontWeight="bold" fontSize="18" id="label1" width="210"/>
+		<mx:HRule x="226" y="31" width="520" id="hrule2"/>
+		<mx:HRule x="22" y="29" width="24" id="hrule3"/>
+		<mx:HRule x="22" y="245" width="724" id="hrule1"/>
+		<mx:VRule x="22" y="32" height="215" id="vrule1"/>
+		<mx:VRule x="746" y="31" height="216" id="vrule2"/>
+		<mx:Label x="111" y="72" text="选择相应的数据库:" fontSize="18" fontWeight="bold" id="label2"/>
+		<mx:ComboBox x="283" y="72" height="25" id="Dbcomb" close="ChooseDbName(event)"></mx:ComboBox>
+		<mx:Label x="96" y="149" text="选择数据库中的数据表:" fontSize="18" fontWeight="bold" id="label3"/>
+		<mx:ComboBox x="306" y="149" height="23" id="Tbcomb" close="ChooseTbName(event)"></mx:ComboBox>
+	</mx:Canvas>
+	<mx:Button x="573" y="415" label="取消" fontSize="18" click="close()" id="button2"/>
+	<mx:Button x="674" y="415" label="下一步" fontSize="18" click="ToStep2()" id="button1"/>
+    <mx:Text id="UserName" text="{parentApplication.uName.text}" visible="false" x="473" y="415"/>	
+	
+</mx:TitleWindow>

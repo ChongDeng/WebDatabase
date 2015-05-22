@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()"  showCloseButton="true" close="close()" layout="absolute" width="256" height="346"  fontSize="12" fontWeight="bold" title="通讯录" backgroundColor="#518000">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Text;
+			       							 
+				   import mx.collections.ArrayCollection;	            
+	               import mx.managers.PopUpManager;	               
+				   import mx.controls.Alert;
+				   import mx.events.CloseEvent;
+				   import mx.events.ListEvent;
+				   import mx.styles.StyleManager;
+				   private var alertCSS:CSSStyleDeclaration;
+				   
+				   public var FriendArr:ArrayCollection=new ArrayCollection;
+				    public var contactName:Text;
+				   private var FriendName:String;
+				  
+				   private var IsEditable:String; 
+				   
+				   private function init( ):void{
+				   	 alertCSS = StyleManager.getStyleDeclaration("Alert");
+				   	 alertCSS.setStyle("fontSize",16);
+                     alertCSS.setStyle("fontStyle","italic"); 
+	             	 fTree.dataProvider=FriendArr;
+	               }
+	             
+	              private function close( ):void
+				  {
+		 			PopUpManager.removePopUp(this);
+				  }
+				  
+				 
+                 
+                 private function ViewContact():void {
+                                    
+                 } 
+
+                 
+             				  
+				  //单击事件
+		         private function chooseContact(evt:ListEvent):void
+		         {
+		               FriendName=evt.target.selectedItem.label;
+		               var AlertStr:String="您选择了联系人："+FriendName;
+		               Alert.show(AlertStr,"提示", 3, this, alertClickHandler); 
+		         }
+		         
+		          // Event handler function for displaying the selected Alert button.
+		            private function alertClickHandler(event:CloseEvent):void {		            	
+		                if (event.detail==Alert.YES)
+		                    {
+		                    	contactName.text=FriendName;
+		                    	dispatchEvent(new Event("chooseFriend")); 
+				    	  	    PopUpManager.removePopUp(this);
+		                    }
+		                else
+		                  {
+		                  	
+		                  }
+		            }
+
+				 
+		]]>
+	</mx:Script>
+	<mx:Tree id="fTree" width="100%" height="100%" itemClick="chooseContact(event)"></mx:Tree>
+</mx:TitleWindow>

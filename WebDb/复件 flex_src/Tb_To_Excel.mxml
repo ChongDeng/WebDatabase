@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"  creationComplete="init()" title="导出—Excel电子表格" layout="absolute" width="580" height="356"  fontSize="12" borderColor="#E2E2E2" fontWeight="bold">
+	<mx:Script>
+		<![CDATA[
+				 import mx.rpc.events.FaultEvent;
+				 import mx.rpc.events.ResultEvent;
+				 import mx.controls.Alert;				 
+				 import mx.collections.ArrayCollection;	            
+	             import mx.managers.PopUpManager;  
+				 public var filePath:String;
+				 public var myFileReference:FileReference = new FileReference();
+				
+				
+	             //DbArray存放用户已经创建过的数据库名，用于用户选择导出哪个数据库的数据表
+				 private var DbArray:ArrayCollection=new ArrayCollection;
+				 //DbForSent保存用户选择的数据库，这将发送到后台
+				 private var DbForSent:String;
+				 //DbPrevious保存用户上一次选择的数据库，这个用来和下一次选择的数据库进行比较，如果相同就不用与后台通信
+				 private var DbPrevious:String;
+				 
+				  //TbArray存放用户已经创建过的某个数据库中的全部数据表名，用于用户选择导出数据库的哪个数据表
+				 private var TbArray:ArrayCollection=new ArrayCollection;
+				 //TbForSent保存用户选择的要导出数据的数据表，这将发送到后台
+				 private var TbForSent:String;
+				 //TbPrevious保存用户上一次选择的数据库，这个用来和下一次选择的数据库进行比较，如果相同就不用与后台通信
+				 private var TbPrevious:String;
+	             
+	             private function init( ):void{
+	             	getName.getDbName.send();
+	             }
+				 
+				 private function close( ):void
+				{
+		 			PopUpManager.removePopUp(this);
+				}
+				
+				private function ChooseDbName(event:Event):void 
+		 		{
+		 			DbForSent=Dbcomb.selectedItem.label;
+		 			if(DbPrevious!=DbForSent)
+		 			  getName.getTbName(UserName.text,DbForSent);	 				 					 			
+		 		}
+		 		
+		 		private function ChooseTbName(event:Event):void 
+		 		{
+		 			TbForSent=Tbcomb.selectedItem.label;		 							 					 			
+		 		}
+		 		
+				private function createFile():void{
+				  //在服务端目录tomcat/webapps/WebDb/space下创建要保存本地的文件
+				  getName.creatTempExcel(UserName.text,DbForSent,TbForSent);				 
+		        }
+				
+				 private function SucCreate(event:ResultEvent):void
+			      {
+					  //filePath="/space/"+TbForSent+".xls";					  
+					  //mx.controls.Alert.show(filePath);
+					  filePath="/space/"+"yangwen.txt";
+					  var u:String = "http://localhost:8080/WebDb/down.jsp?file="+filePath;
+				      var request:URLRequest = new URLRequest(u);
+				      myFileReference.download(request);				
+				      myFileReference.addEventListener(Event.COMPLETE, onComplete);
+				  }
+				
+				
+				 private function onComplete(event:Event):void{
+                    mx.controls.Alert.show("Done Success");
+                 }
+		 		
+		 	  	 //成功读取数据库名
+		           private function SucDbName(event:ResultEvent):void
+			      {
+					 DbArray=ArrayCollection(event.result);				
+					 Dbcomb.dataProvider=DbArray;	
+					 DbPrevious=DbArray[0].label;  //DbPrevious保存用户上一次选择的数据库，这个用来和下一次选择的数据库进行比较，如果相同就不用与后台通信
+					 DbForSent=DbArray[0].label; //	DbForSent初始化为第一个数据库名	
+					 					 
+					 getName.getTbName(UserName.text,DbForSent);		 
+				  }
+				   //成功读取数据表名
+		           private function SucTbName(event:ResultEvent):void
+			      {
+					 TbArray=ArrayCollection(event.result);				
+					 Tbcomb.dataProvider=TbArray;	
+					 TbForSent=TbArray[0].label; //	DbForSent初始化为第一个数据库名	
+					 TbPrevious=TbArray[0].label;  //TbPrevious保存用户上一次选择的数据表，这个用来和下一次选择的数据表进行比较，如果相同就不用与后台通信		 
+				  }
+				  
+				  //读取数据库名失败、读取数据表名失败  
+				    private function defaultFault(event:FaultEvent):void
+			      {
+					 mx.controls.Alert.show(event.fault.faultString);  
+					 
+				  }
+		 	    
+		 	  
+		]]>
+	</mx:Script>
+	<mx:Canvas width="100%" height="100%" id="canvas2">
+	
+		<mx:Canvas x="0" y="0" width="560" height="162">
+			<mx:Label x="42" y="2" text="请选择导出的数据源" fontWeight="bold" fontSize="18" id="label1"/>
+			<mx:HRule x="230" y="11" width="320"/>
+			<mx:HRule x="10" y="11" width="24"/>
+			<mx:HRule x="10" y="147" width="540"/>
+			<mx:VRule x="10" y="10" height="139"/>
+			<mx:VRule x="548" y="10" height="139"/>
+			<mx:Label x="111" y="41" text="选择相应的数据库:" fontSize="18" fontWeight="bold" id="label2"/>
+			<mx:ComboBox x="283" y="41" height="25" id="Dbcomb" close="ChooseDbName(event)"></mx:ComboBox>
+			<mx:Label x="96" y="88" text="选择数据库中的数据表:" fontSize="18" fontWeight="bold" id="label3"/>
+			<mx:ComboBox x="306" y="88" height="23" id="Tbcomb" close="ChooseTbName(event)"></mx:ComboBox>
+		</mx:Canvas>
+		<mx:HRule x="10" y="258" width="540"/>
+		<mx:HRule x="187" y="170" width="363"/>
+		<mx:VRule x="548" y="170" height="90"/>
+		<mx:VRule x="10" y="170" height="90"/>
+		<mx:Label x="52" y="192" text="请选择目标文件的保存路径:" fontWeight="bold" fontSize="18"/>
+		<mx:Button x="302" y="186" label="浏览…" fontWeight="bold" fontSize="16" height="38" click="createFile()"/>
+		<mx:Button x="464" y="274" label="关闭" fontWeight="bold" fontSize="20" click="close()"/>
+		<mx:Text id="UserName" text="{parentApplication.uName.text}" visible="false" y="284" x="10"/>		
+		<mx:HRule x="10" y="170" width="26"/>
+		<mx:Label x="41" y="159" text="请选择保存路径" fontSize="18"/>
+		
+	</mx:Canvas>
+	
+
+	<mx:RemoteObject id="getName" destination="Export" fault="defaultFault(event)">
+		  <mx:method name="getDbName" result="SucDbName(event)">
+	            <mx:arguments>
+	                <name>{UserName.text}</name>
+	            </mx:arguments>
+	     </mx:method>
+	     
+	     <mx:method name="getTbName" result="SucTbName(event)">
+	            <mx:arguments>
+	                <arg1>{UserName.text}</arg1>
+	                <arg2>{DbForSent}</arg2>
+	            </mx:arguments>
+	     </mx:method> 
+	     
+	     <mx:method name="creatTempExcel" result="SucCreate(event)">
+	            <mx:arguments>
+	                <arg1>{UserName.text}</arg1>
+	                <arg2>{DbForSent}</arg2>
+	                <arg3>{TbForSent}</arg3> 
+	            </mx:arguments>
+	     </mx:method> 
+	     
+	     
+    </mx:RemoteObject>
+	
+</mx:TitleWindow>

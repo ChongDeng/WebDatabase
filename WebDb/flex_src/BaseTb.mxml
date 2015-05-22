@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
+<mx:Script>
+	<![CDATA[
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		import mx.controls.Alert;
+		
+		
+		private function AddItem():void{
+		RemoteItem.AddIt.send();
+		}
+		
+		private function ModifyItem():void{
+		RemoteItem.ModifyIt.send();
+		}
+	
+	    private function DeleteItem():void{
+		RemoteItem.DeleteIt.send();
+		}
+		
+		private function CreateTable():void{
+		RemoteItem.CreateTb.send();
+		}
+		
+		private function DeleteTable():void{
+		RemoteItem.DeleteTb.send();
+		}
+				
+		private function CreateDbase():void{
+		RemoteItem.CreateDb.send();
+		}
+		
+		private function DeleteDbase():void{
+		RemoteItem.DeleteDb.send();
+		}
+	   
+		private function AddSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功添加记录");
+		}
+	
+	    private function ModifySuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功修改记录");
+		}
+		
+	    private function DeleteSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功删除记录");
+		}
+		
+		
+		
+		private function CreateTbSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功建立数据表");
+		}
+		
+		private function DeleteTbSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功删除数据表");
+		}
+		
+		
+		
+		private function CreateDbSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功建立数据库");
+		}
+		
+		private function DeleteDbSuccess(event:ResultEvent):void
+		{
+		    mx.controls.Alert.show("已成功删除数据库");
+		}
+		
+		
+		//出错处理
+		public function DefaultFault(event:FaultEvent):void {      
+         mx.controls.Alert.show(event.fault.faultString, "Error");               
+            }
+       
+     
+	]]>
+</mx:Script>
+<mx:RemoteObject id="RemoteItem" destination="ww" fault="DefaultFault(event)">
+	  <mx:method name="AddIt" result="AddSuccess(event)"/>
+	  <mx:method name="ModifyIt" result="ModifySuccess(event)"/>
+	  <mx:method name="DeleteIt" result="DeleteSuccess(event)"/>
+	  
+	  <mx:method name="CreateTb" result="CreateTbSuccess(event)"/>
+	  <mx:method name="DeleteTb" result="DeleteTbSuccess(event)"/>
+	  
+	  <mx:method name="CreateDb" result="CreateDbSuccess(event)"/>
+	  <mx:method name="DeleteDb" result="DeleteDbSuccess(event)"/>
+       
+  
+   
+</mx:RemoteObject>
+
+
+	<mx:Button x="41" y="69" label="创建数据库" click="CreateDbase()"/>
+	<mx:Button x="140" y="69" label="删除数据库" click="DeleteDbase()"/>
+	<mx:Button x="41" y="141" label="新建数据表"  click="CreateTable()"/>
+	<mx:Button x="140" y="141" label="删除数据表" click="DeleteTable()"/>
+	<mx:Button x="41" y="217" label="增加记录" click="AddItem()"/>
+	<mx:Button x="151" y="217" label="修改记录" click="ModifyItem()"/>
+	<mx:Button x="279" y="217" label="删除记录" click="DeleteItem()"/>
+	
+</mx:Application>

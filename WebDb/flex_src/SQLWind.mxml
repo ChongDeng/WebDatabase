@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" title="SQL查询"  backgroundColor="#518000" layout="horizontal" width="1000" height="600" 
+	 showCloseButton="true" close="cancel()" fontSize="13" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[			     
+			      import mx.rpc.events.FaultEvent;
+		          import mx.rpc.events.ResultEvent;
+			      
+			      import mx.controls.DataGrid;
+			      import mx.containers.Canvas;
+			      import mx.controls.dataGridClasses.DataGridColumn;
+			      import mx.controls.Alert;
+			      import mx.managers.PopUpManager;  
+			      import mx.collections.ArrayCollection;  
+			      var SqlSend:String;
+			      var RefreshFlag:Boolean=false;
+			  	  //SQlArray用来存储从Mysql传来的数据库的名字
+			  	  private var SQlArray:ArrayCollection=new ArrayCollection();		  	 
+	
+	              private var arDatas:ArrayCollection=new ArrayCollection();
+			      private var ColArray:ArrayCollection=new ArrayCollection();
+                  private var arr:Array=new Array;
+                  private var ColNum:int;
+                  private var MyDataDG:DataGrid;  
+	              	             	  	
+			  		public function init():void
+			       {
+		     	     //显示供连接的数据库
+		     	      SqlDbase.SQLDbData.send();
+		           }
+			  		
+			  		 //成功显示数据库
+		           private function SQLDbDataSuc(event:ResultEvent):void
+			      {
+					 SQlArray=ArrayCollection(event.result); 
+					 comb.dataProvider=SQlArray;					 
+				  }				  
+				  //显示数据库失败  
+				    private function SQLDbDataFault(event:FaultEvent):void
+			      {
+					 mx.controls.Alert.show("数据库列表初始化失败");  
+					 
+				  }
+			  		
+			  	  private function chooseDbName(event:Event):void 
+		           {
+	                  var DBNAME:String =ComboBox(event.target).selectedItem.label;
+	                  UserDb.text=UserName.text+"$"+DBNAME;
+	                  ConnDb.Connection.send();
+	               }	
+			  	 
+			  	  //连接数据库成功
+				    private function ConDbSuc(event:ResultEvent):void
+			      {
+					  //mx.controls.Alert.show("数据库连接成功"); 
+					 
+				  }
+				   //连接数据库失败
+				    private function ConDbFault(event:FaultEvent):void
+			      {
+					 mx.controls.Alert.show("数据库连接失败"); 
+					 
+				  }
+			  	  //刷新显示供连接的数据库
+			  	    public function RefreshDb(flag:Boolean):void
+			       {		     	    
+		     	      if(flag)
+		     	        {
+		     	          init();
+		     	          RefreshFlag=false;
+		     	        }
+		     	      else
+		     	      {     }  
+		           }
+			  			    
+			       public function cancel():void
+			       {
+		     	      PopUpManager.removePopUp(this);
+		           }
+		           
+		            //提交查询语句
+		            public function RunFunc():void
+			       { 
+			       	    //检查SQL语句是否为数据库的操作，如果是，将RefreshFlag置为TRUE，从而刷新数据库
+			       	    var SqlString:String=SQLInput.text;
+			       	    var SQLStoreArray:Array=new Array;
+		     	        SQLStoreArray=SqlString.split(" ");
+		     	        for(var i:int=0;i<SQLStoreArray.length;i++)
+		     	          if(SQLStoreArray[i]=="database"||SQLStoreArray[i]=="DATABASE"||SQLStoreArray[i]=="table"||SQLStoreArray[i]=="TABLE")		     	               
+		     	                 RefreshFlag=true;              
+			       	   sendSQL.SqlOperation.send();
+			       }
+			       
+		         
+		          //发送SQL查询成功  
+		          private function SQLSuccess(event:ResultEvent):void
+			      {
+					  
+					  
+					  var Res:String = event.result.toString();					 
+					  if(Res=="Select")  //*****************对于Select语句，不需要在"查询结果"文本框中显示结果，只要弹出一个TabNavigator******************
+					  {
+					  	 var SqlString:String=SQLInput.text;
+					  	 var USER_DB:String=UserDb.text;
+      	                 getTable.SQLArrData.send(SqlString,USER_DB); 
+					  }					 
+					  else              //*****************对于非Select语句，结果将在"查询结果"文本框中显示******************
+					  {			 
+						   if(Res.search("use")!=-1)
+						       UserDb.text=UserName.text+"$"+Res.substring(3,Res.length);	
+						   if(Res=="请先连接数据库"||Res=="操作失败")
+						     {
+						     	SQLOutPut.text=SQLOutPut.text+"您输入的SQL语句为："+SQLInput.text+"\n"+"执行失败！"+"\n\n";
+						        mx.controls.Alert.show(Res);	
+						     } 
+						   else						     
+						     {
+						     	SQLOutPut.text=SQLOutPut.text+"您输入的SQL语句为："+SQLInput.text+"\n"+"执行成功！"+"\n\n";
+						     	mx.controls.Alert.show(Res);
+						     }   
+						      
+						       						      
+						  
+						    //刷新显示的数据库
+						    RefreshDb(RefreshFlag);  
+						    dispatchEvent(new Event("SQLEvent"));  
+							    
+					  }
+					  
+					     
+					  
+					  
+				  }
+				  //发送SQL查询失败
+				   public function SQLFault(event:FaultEvent):void 
+				  {    		               
+		               SQLOutPut.text=SQLOutPut.text+"您输入的SQL语句为："+SQLInput.text+"\n"+"您输入的查询存在错误！"+"\n\n";
+		               mx.controls.Alert.show(event.fault.faultString, "Error");               
+		          }
+		          	         
+				  
+				  
+				
+			  	 public function onResult(event:ResultEvent):void
+			  	 {   
+             
+		             arDatas=ArrayCollection(event.result); 
+		             
+		             var SqlString:String=SQLInput.text;  
+		             var USER_DB:String=UserDb.text;
+      	             getTable.SQLColName.send(SqlString,USER_DB);           
+		            
+                  }
+         
+              
+                public function ColResult(event:ResultEvent):void
+                 {
+      	   
+      	            ColArray=ArrayCollection(event.result); 
+      	            arr=ColArray.toArray();
+      	            ColNum=arr.length;
+      	            
+      	            createDataGrid( );
+      	         }
+      	       
+      	         
+      	        public function createDataGrid( ):void
+      	        {    
+      	        		MyDataDG=new DataGrid();
+      	        		
+      	        		
+						
+						MyDataDG.editable=true;
+						MyDataDG.sortableColumns=false
+					
+						//MyDataDG.percentHeight=80;
+						MyDataDG.setStyle("verticalAlign", "middle")
+					
+					    MyDataDG.columns=myGridcolumns();
+					    MyDataDG.dataProvider=arDatas;
+		              
+		                var canvas:Canvas=new Canvas;
+			  		    canvas.label="Select得到的数据表"; 
+		                
+		                canvas.addChild(MyDataDG);
+		                
+		                myTab.addChildAt(canvas,1); 
+      	                myTab.selectedIndex=1;
+	             }    
+	             
+	            private var ValueArray:Array=["key1","key2","key3","key4","key5","key6","key7","key8","key9","key10"];
+				
+				private function myGridcolumns():Array
+				{
+					var cols:Array=MyDataDG.columns;							    	
+			    	for (var m:int=1; m<ColNum;m++)
+					 {
+						var ShowID_DC:DataGridColumn=new DataGridColumn();
+						ShowID_DC.editable=true;
+						ShowID_DC.draggable=false;
+						ShowID_DC.headerText=arr[m];
+						ShowID_DC.dataField=ValueArray[m];
+						
+						ShowID_DC.setStyle("textAlign", "center");
+						cols.push(ShowID_DC)
+						 //mx.controls.Alert.show("列名："+arr[m]);
+					}
+				
+				 return cols;
+				} 
+                
+                //显示select的结果失败
+		       public function onFault(event:FaultEvent):void 
+		       {      
+		           mx.controls.Alert.show(event.fault.faultString, "Error");               
+		       } 
+			 
+			   //弹出导入SQl的窗口		
+			   public function ImportFunc():void
+			  {			  	 			  	 
+			  	   var ImportSql:Import_SQL = new Import_SQL();      
+			       PopUpManager.addPopUp(ImportSql,this,true);			    
+			       ImportSql.addEventListener("EventSendName",readFileContent); 
+			       PopUpManager.centerPopUp(ImportSql);		      
+			       ImportSql.SqlfileName=SqlfileReq;
+			       ImportSql.DbName=DbnameReq;          
+			  }		
+			 
+			  //读取服务器目录上用户上传上去的SQL文件的内容
+			  private function readFileContent(event:Event):void
+		      {
+		         read.getContent(SqlfileReq.text);		        
+		      }
+		      
+		      //在上一步读取完内容后，这里紧接着将读取的内容在查询分析器中执行
+		      public function SucRead(event:ResultEvent):void
+              {     	   
+                 	
+                 	var str:String="use "+DbnameReq.text+";";      	            
+      	            SQLInput.text=str+event.result.toString();   
+      	            RunFunc(); //读到文件内容后，就根据内容进行查询处理
+      	           
+      	      }
+		      
+			
+		]]>
+	</mx:Script>
+	
+<mx:Style>
+	ToolTip{ 
+        fontFamily: "Arial"; 
+        fontSize: 19; 
+        fontStyle: "italic"; 
+        color: white; 
+        backgroundColor: blue;}
+</mx:Style>
+	<!--发送SQL查询-->
+	<mx:RemoteObject id="sendSQL" destination="ww" fault="SQLFault(event)">
+	  <mx:method name="SqlOperation" result="SQLSuccess(event)">
+	        <mx:arguments>
+               <arg1>{SQLInput.text}</arg1>
+               <arg2>{UserName.text}</arg2>
+            </mx:arguments>
+	  </mx:method>
+	</mx:RemoteObject>  
+	
+	<!--连接数据库-->
+	<mx:RemoteObject id="ConnDb" destination="ww" fault="ConDbFault(event)">
+	  <mx:method name="Connection" result="ConDbSuc(event)">
+	        <mx:arguments>
+	          <name>{UserDb.text}</name>
+            </mx:arguments>
+	  </mx:method>
+	</mx:RemoteObject>  
+	  
+	  
+	<!--显示要连接的数据库-->
+     <mx:RemoteObject id="SqlDbase" destination="ww" fault="SQLDbDataFault(event)">
+          <mx:method name="SQLDbData" result="SQLDbDataSuc(event)">
+              <mx:arguments>
+                 <name>{UserName.text}</name>
+              </mx:arguments>
+         </mx:method>
+     </mx:RemoteObject>
+   
+    <!--用于select语句-->
+    <mx:RemoteObject id="getTable" destination="UserDao" fault="onFault(event)">
+	       <mx:method name="SQLArrData" result="onResult(event)"/>
+	       <mx:method name="SQLColName" result="ColResult(event)"/>
+	</mx:RemoteObject>
+	
+	<!--用于获取文件内容-->
+    <mx:RemoteObject id="read" destination="sqlImport" fault="onFault(event)">
+	       <mx:method name="getContent" result="SucRead(event)"/>	      
+	</mx:RemoteObject>
+
+     <mx:VBox width="100%" height="100%">
+   	    <mx:ApplicationControlBar  dock="true" width="100%" >
+   	  	  <mx:Spacer width="25"/>
+   	  	  <mx:Button label="运行"  click="RunFunc()"/>
+   	  	  <mx:Spacer width="25"/>
+   	  	  <mx:Button label="导入脚本" click="ImportFunc()"/>
+   	  	  <mx:Spacer width="25"/>
+   	  	  <mx:Button/>
+   	  	  <mx:Spacer width="25"/>  	  	   	  	
+   	    </mx:ApplicationControlBar>
+   	    
+   	    
+   	    <mx:HBox width="100%" height="515">
+   	     	    <mx:Panel  height="514">
+		   	    	<mx:Label text="连接数据库"  y="11" toolTip="请先连接所需要查询的数据库" fontWeight="bold" color="#3C0B10" width="154"/>
+		   	    	<mx:ComboBox id="comb"  width="100%" close="chooseDbName(event)"></mx:ComboBox>
+		   	    	
+		   	    	<mx:ControlBar>
+						<mx:Label  id="TextSql" text="{SQLInput.text}" width="23" height="10" visible="true"/>
+						<mx:Label  id="UserName" text="{parentApplication.uName.text}" width="20" height="10" visible="true"/>
+						<mx:Label id="SQLStr" height="10" visible="true"/>
+						<mx:Label  id="UserDb"  width="24" height="8"/>
+						<mx:Text  id="SqlfileReq"  width="24" height="8"/>
+						<mx:Text  id="DbnameReq" width="24" height="8"/>
+						
+					
+					</mx:ControlBar>
+		   	    	
+		   	    </mx:Panel>
+		   	   
+		   	   <mx:VBox id="rightCharts" width="778" height="514">
+				 <mx:TabNavigator id="myTab" width="100%" height="100%">
+				    <mx:VBox id="origin" width="100%" label="查询分析器">
+					    	 <mx:Panel id="type" title="请输入SQL：" width="775" height="163">
+	 	                         <mx:TextArea id="SQLInput" borderColor="#0080ff" borderStyle="solid" width="100%" height="100%"/>
+						      </mx:Panel>
+						
+						     <mx:Panel id="comp" title="查询结果如下:" width="775" height="301">
+							     <mx:TextArea id="SQLOutPut" editable="false" borderColor="#0080ff" borderStyle="solid" width="100%" height="100%"/>
+						     </mx:Panel>
+				    </mx:VBox> 
+				    
+				 </mx:TabNavigator>
+				
+			   </mx:VBox>
+		 </mx:HBox>   	   
+   </mx:VBox>
+   
+
+	
+
+
+</mx:TitleWindow>

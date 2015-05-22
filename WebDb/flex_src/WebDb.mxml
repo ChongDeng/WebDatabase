@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" initialize="init()">
+    <mx:Style>
+    	            AccordionHeader{
+    	            	color:#FF00FF;
+    	            	fontSize:18
+    	            }
+    </mx:Style>
+    
+    <mx:Script>
+    	<![CDATA[
+                     import mx.events.TreeEvent;
+        	         import mx.events.ListEvent;
+                     import mx.controls.Alert;
+           
+  		             import mx.rpc.events.FaultEvent;
+				     import mx.rpc.events.ResultEvent;   		        
+    		        
+    		         private var DbTbData:XML;
+    		         
+    		         private function init():void
+					{
+				   		
+				   		  displayName.getDbTb("ss");//获取用户创建的数据库数据表
+					   	 
+				   	}    
+    		   
+			    		        //单击事件
+			        private function quzhi(evt:ListEvent):void
+			        {
+			              
+			         }
+
+			        //双击弹出表格窗口，编辑数据
+					 private function DoubleClicK(evt:ListEvent):void
+					       {
+					            
+					         }
+			
+			    		      
+    		         private function Suc(event:ResultEvent):void
+				    {
+					   		var s:String = event.result.toString();
+					   		DbTbData=new XML(s);
+					   		myTree.dataProvider=DbTbData;
+					
+				   	}
+				   	
+								   	  //出错处理
+					 public function defaultFault(event:FaultEvent):void 
+					 {      
+				         mx.controls.Alert.show(event.fault.faultString, "Error");               
+				     } 
+    	]]>
+    </mx:Script>
+    
+    
+     <mx:RemoteObject id="displayName" destination="DB" fault="defaultFault(event)">
+          <mx:method name="getDbTb" result="Suc(event)">
+             
+         </mx:method>       
+     </mx:RemoteObject>
+    
+    
+    <!--创建折叠式导航容器 -->
+    <mx:Accordion id="accordion1" height="340" width="260"  fontSize="14" x="58" y="37">
+        <!--子容器1 -->
+        <mx:VBox label="您创建的数据库" width="100%" height="100%">
+          
+          <mx:Tree id="myTree" width="100%" height="100%" labelField="@item"
+            	itemClick="quzhi(event)"
+            	doubleClickEnabled="true" 
+            itemDoubleClick="DoubleClicK(event)"/>
+        </mx:VBox>
+        <!--子容器2 -->
+        <mx:VBox label="与他人分享的数据库" 
+            width="100%" 
+            height="100%">
+              <mx:Label text="现在显示为第二步"/>
+        </mx:VBox>
+        <!--子容器3 -->
+        <mx:VBox label="他人与您分享的数据库" 
+             width="100%" 
+            height="100%">
+              <mx:Label text="现在显示为第三步"/>
+        </mx:VBox>      
+    </mx:Accordion>
+</mx:Application>

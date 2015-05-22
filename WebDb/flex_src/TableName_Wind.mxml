@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow title="新建数据表" xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" width="323" height="186" fontSize="13"
+	 showCloseButton="true" close="WindowClose()">
+    <mx:Script> 
+
+        <![CDATA[ 
+             import mx.managers.PopUpManager;    
+             
+             import mx.rpc.events.FaultEvent;
+		     import mx.rpc.events.ResultEvent;
+             
+             import mx.events.PropertyChangeEvent;
+             import mx.events.CollectionEventKind;
+             import mx.events.CollectionEvent;
+
+             import mx.collections.ArrayCollection; 
+             import com.adobe.serialization.json.JSON;
+             //非常重要
+             import mx.messaging.AbstractConsumer;
+            
+            //NodeCurrent存储M由TableWind传来的当前节点信息,即库名            
+            public var NodeCurrent:String=new String;
+            private var UserName:String=new String;
+            
+            //此数组接受由父窗口传过来的关于用户创建的列的数组
+            public var PareArray:ArrayCollection= new ArrayCollection();
+            
+            private var ColJson:String=new String;
+            private var ColArray:ArrayCollection= new ArrayCollection();
+            var dataString:String=new String;
+            var rawArray:Array=new Array;
+            var dataArray:ArrayCollection=new ArrayCollection;
+         
+            //取消 
+       private function WindowClose():void
+             {
+             	PopUpManager.removePopUp(this);
+             } 
+         
+        private function CreateTbSuccess(event:ResultEvent):void
+		{
+		  mx.controls.Alert.show("已成功建立数据表");
+		  dispatchEvent(new Event("myEvent2")); 
+		  WindowClose();
+		   
+		}
+		   
+		   
+		public function DefaultFault(event:FaultEvent):void 
+		{      
+           mx.controls.Alert.show(event.fault.faultString, "Error");               
+        }
+        
+         private function CreaTb():void
+         {
+              var User_Db:Object = new Object;
+              User_Db.label =parentApplication.uName.text;
+              User_Db.type =NodeCurrent;
+              PareArray.addItem(User_Db);
+               
+              var TableInfo:Object = new Object;
+              TableInfo.label =NameTb.text;
+              TableInfo.type =null;
+              PareArray.addItem(TableInfo);
+              
+              ColJson=JSON.encode(PareArray.toArray());
+              mx.controls.Alert.show(ColJson); 
+              SendArray.CreateTb(ColJson); 
+         }
+        
+      ]]> 
+
+    </mx:Script> 
+    
+     <mx:RemoteObject id="SendArray" destination="ww" fault="DefaultFault(event)" result="CreateTbSuccess(event)" >
+	 </mx:RemoteObject>	
+	<mx:Label x="25" y="13" text="请输入数据表名:" fontWeight="bold"/>
+	<mx:TextInput  id="NameTb" x="23" y="43" width="218" height="34"/>
+	<mx:Button x="130" y="99" label="确定" click="CreaTb()" fontSize="17"/>
+	<mx:Button x="220" y="99" label="关闭" click="WindowClose()" fontSize="17"/>
+   
+    
+
+     
+</mx:TitleWindow>
